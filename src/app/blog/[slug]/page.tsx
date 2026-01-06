@@ -90,11 +90,28 @@ export default async function Blog({
     notFound();
   }
 
-  const previousPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
-  const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+  const previousPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+  const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
   const getSlug = (post: (typeof sortedPosts)[0]) =>
     post._meta.path.replace(/\.mdx$/, "");
+
+  const jsonLdContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    description: post.summary,
+    image: post.image
+      ? `${DATA.url}${post.image}`
+      : `${DATA.url}/blog/${slug}/opengraph-image`,
+    url: `${DATA.url}/blog/${slug}`,
+    author: {
+      "@type": "Person",
+      name: DATA.name,
+    },
+  }).replace(/</g, "\\u003c");
 
   return (
     <section id="blog">
@@ -102,24 +119,13 @@ export default async function Blog({
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
-            datePublished: post.publishedAt,
-            dateModified: post.publishedAt,
-            description: post.summary,
-            image: post.image
-              ? `${DATA.url}${post.image}`
-              : `${DATA.url}/blog/${slug}/opengraph-image`,
-            url: `${DATA.url}/blog/${slug}`,
-            author: {
-              "@type": "Person",
-              name: DATA.name,
-            },
-          }),
+          __html: jsonLdContent,
         }}
       />
+      <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-4 group" aria-label="Back to Blog">
+        <ChevronLeft className="size-3 group-hover:-translate-x-px transition-transform" />
+        Back to Blog
+      </Link>
       <div className="flex flex-col gap-2">
         <h1 className="title font-semibold text-3xl md:text-4xl tracking-tight">
           {post.title}
