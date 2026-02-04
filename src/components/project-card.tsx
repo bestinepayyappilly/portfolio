@@ -19,7 +19,7 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
     <img
       src={src}
       alt={alt}
-      className="w-full h-48 object-cover border shadow-xl rounded-2xl overflow-hidden"
+      className="w-fit  h-52 object-contain  shadow-xl rounded-2xl overflow-hidden bg-white"
       onError={() => setImageError(true)}
     />
   );
@@ -66,7 +66,7 @@ export function ProjectCard({
           href={href || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="block p-2"
+          className="p-2 flex items-center justify-center"
         >
           {video ? (
             <video
@@ -75,12 +75,12 @@ export function ProjectCard({
               loop
               muted
               playsInline
-              className="w-full h-48 object-cover"
+              className="w-fit h-52 object-contain  shadow-xl rounded-2xl overflow-hidden bg-black"
             />
           ) : image ? (
             <ProjectImage src={image} alt={title} />
           ) : (
-            <div className="w-full h-48 bg-muted" />
+            <div className="w-full h-52 bg-muted" />
           )}
         </Link>
         {links && links.length > 0 && (
@@ -94,7 +94,7 @@ export function ProjectCard({
                 onClick={(e) => e.stopPropagation()}
               >
                 <Badge
-                  className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
+                  className="flex items-center gap-1.5 rounded-full text-xs bg-black text-white hover:bg-black/90"
                   variant="default"
                 >
                   {link.icon}

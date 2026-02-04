@@ -15,7 +15,7 @@ export const DATA = {
   location: "Bangalore, Karnataka, India",
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description:
-    "Mobile Developer & Full Stack Engineer. I build production apps handling payments and sensitive financial data.",
+    "Mobile Developer & Full Stack Engineer. I build production apps & websites handling payments and sensitive financial data.",
   summary:
     "I started my development journey in **2020** during the peak of COVID, teaching myself mobile design patterns, Apple guidelines, React, React Native, and native Android and iOS development. What began as an internship quickly evolved into freelance work, fueled by my passion for solving complex **UI and architecture challenges**. I'm a **self-taught developer** with a strong focus on innovative problem-solving and architecture, with proven ability to **work independently** and deliver **complete products end-to-end**.",
   avatarUrl: "/me.png",
@@ -60,23 +60,11 @@ export const DATA = {
 
   work: [
     {
-      company: "doyou.ae",
-      href: "https://doyou.ae",
-      badges: ["Freelance"],
-      location: "Dubai, UAE (Remote)",
-      title: "Frontend Lead",
-      logoUrl: "/doyouae.svg",
-      start: "End of 2024",
-      end: "Present",
-      description:
-        "Currently serving as Frontend Lead for this Dubai-based startup while maintaining my full-time role, building scalable applications with Next.js.",
-    },
-    {
       company: "National Finance Olympiad",
       badges: [],
       href: "https://nfo.edu",
       location: "Remote",
-      title: "Full Stack Developer",
+      title: "Senior Full Stack Developer",
       logoUrl: "/NFOLogo.svg",
       start: "2022",
       end: "Present",
@@ -94,6 +82,18 @@ export const DATA = {
       end: "2024",
       description:
         "Joined Streak, a recently funded payments app for teens, after being selected for having the best design and state management techniques among all applicants. Progressed from intern to sole mobile architect, overseeing both iOS and Android development. Architected and maintained both iOS and Android applications handling sensitive payment flows and cryptographic operations. Solved critical native code issues in both platforms. Single-handedly designed and developed a new app for Fixed Deposits (FDs), handling everything from architecture to UI/UX. Led the redesign and implementation of new features including gold investments and financial products.",
+    },
+    {
+      company: "doyou.ae",
+      href: "https://doyou.ae",
+      badges: ["Freelance"],
+      location: "Dubai, UAE (Remote)",
+      title: "Frontend Lead",
+      logoUrl: "/doyouae.svg",
+      start: "2024",
+      end: "End of 2025",
+      description:
+        "Currently serving as Frontend Lead for this Dubai-based startup while maintaining my full-time role, building scalable applications with Next.js.",
     },
   ],
   education: [
@@ -163,7 +163,7 @@ export const DATA = {
         },
       ],
       image: "/NFOImage.png",
-      video: "",
+      video: "/NFOPortal.mp4",
     },
   ],
   hackathons: [] as Array<{
