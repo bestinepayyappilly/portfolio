@@ -78,9 +78,9 @@ export default function RootLayout({
                 squareSize={5}
                 gridGap={5}
                 style={{
-                  maskImage: "linear-gradient(to bottom, black, transparent)",
+                  maskImage: "linear-gradient(to bottom, #f9b16e, transparent)",
                   WebkitMaskImage:
-                    "linear-gradient(to bottom, black, transparent)",
+                    "linear-gradient(to bottom, #f9b16e, transparent)",
                 }}
               />
             </div>
