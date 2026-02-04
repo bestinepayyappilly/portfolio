@@ -49,6 +49,12 @@ export const DATA = {
         icon: Icons.linkedin,
         navbar: true,
       },
+      X: {
+        name: "X",
+        url: "https://x.com/bestine1234",
+        icon: Icons.x,
+        navbar: true,
+      },
       email: {
         name: "Send Email",
         url: "mailto:bestine1234@gmail.com",
@@ -109,6 +115,27 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "ThirdMeal",
+      href: "#",
+      dates: "2025",
+      active: true,
+      description:
+        "A full-stack e-commerce platform for premium health-focused food products. Features a multi-step checkout flow, Razorpay payment integration (UPI, Cards, Net Banking, Wallets), real-time cart management, and OTP-based phone verification with secure PostgreSQL database design.",
+      technologies: [
+        "React 19",
+        "Vite",
+        "Supabase",
+        "PostgreSQL",
+        "Razorpay",
+        "React Hook Form",
+        "Yup",
+        "Framer Motion",
+      ],
+      links: [],
+      image: "",
+      video: "/Thirdmeal.mp4",
+    },
+    {
       title: "Wotter",
       href: "https://apps.apple.com/in/app/wotter/id6479811630",
       dates: "2024",
@@ -138,6 +165,29 @@ export const DATA = {
       ],
       image: "/Wotter.png",
       video: "",
+    },
+    {
+      title: "NFO Checkout",
+      href: "#",
+      dates: "2022 - Present",
+      active: true,
+      description:
+        "A monorepo containing 3 production checkout apps (NFO Books, NFO Registration, NFA Checkout) built with Turborepo. Features multi-payment gateway integration (Razorpay, BillDesk, Stripe), A/B testing framework with GA4, OTP verification, and dynamic pricing with bundle discounts and COD support.",
+      technologies: [
+        "React 18",
+        "TypeScript",
+        "Turborepo",
+        "Razorpay",
+        "BillDesk",
+        "Stripe",
+        "Material-UI",
+        "Sentry",
+        "Firebase",
+        "GA4",
+      ],
+      links: [],
+      image: "",
+      video: "/NFOCheckout.mp4",
     },
     {
       title: "NFO Student Hub",

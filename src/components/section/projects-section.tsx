@@ -1,6 +1,7 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { ProjectCard } from "@/components/project-card";
 import { DATA } from "@/data/resume";
+import { TextAnimate } from "@/components/ui/text-animate";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -23,7 +24,14 @@ export default function ProjectsSection() {
                         />
                     </div>
                     <div className="flex flex-col gap-y-3 items-center justify-center">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Check out my latest work</h2>
+                        <TextAnimate
+                            as="h2"
+                            className="text-3xl font-bold tracking-tighter sm:text-4xl"
+                            animation="blurInUp"
+                            by="word"
+                        >
+                            Check out my latest work
+                        </TextAnimate>
                         <p className="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed text-balance text-center">
                             I&apos;ve worked on a variety of projects, from simple
                             websites to complex web applications. Here are a few of my

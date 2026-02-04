@@ -10,6 +10,7 @@ import HackathonsSection from "@/components/section/hackathons-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
+import { TextAnimate } from "@/components/ui/text-animate";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -43,9 +44,15 @@ export default function Page() {
       </section>
       <section id="about">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <BlurFade delay={BLUR_FADE_DELAY * 3}>
-            <h2 className="text-xl font-bold">About</h2>
-          </BlurFade>
+          <TextAnimate
+            as="h2"
+            className="text-xl font-bold"
+            animation="blurInUp"
+            by="word"
+            delay={BLUR_FADE_DELAY * 3}
+          >
+            About
+          </TextAnimate>
           <BlurFade delay={BLUR_FADE_DELAY * 4}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
               <Markdown>{DATA.summary}</Markdown>
@@ -55,9 +62,15 @@ export default function Page() {
       </section>
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <BlurFade delay={BLUR_FADE_DELAY * 5}>
-            <h2 className="text-xl font-bold">Work Experience</h2>
-          </BlurFade>
+          <TextAnimate
+            as="h2"
+            className="text-xl font-bold"
+            animation="blurInUp"
+            by="word"
+            delay={BLUR_FADE_DELAY * 5}
+          >
+            Work Experience
+          </TextAnimate>
           <BlurFade delay={BLUR_FADE_DELAY * 6}>
             <WorkSection />
           </BlurFade>
@@ -65,9 +78,15 @@ export default function Page() {
       </section>
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
-            <h2 className="text-xl font-bold">Education</h2>
-          </BlurFade>
+          <TextAnimate
+            as="h2"
+            className="text-xl font-bold"
+            animation="blurInUp"
+            by="word"
+            delay={BLUR_FADE_DELAY * 7}
+          >
+            Education
+          </TextAnimate>
           <div className="flex flex-col gap-8">
             {DATA.education.map((education, index) => (
               <BlurFade
@@ -116,9 +135,15 @@ export default function Page() {
       </section>
       <section id="skills">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <BlurFade delay={BLUR_FADE_DELAY * 9}>
-            <h2 className="text-xl font-bold">Skills</h2>
-          </BlurFade>
+          <TextAnimate
+            as="h2"
+            className="text-xl font-bold"
+            animation="blurInUp"
+            by="word"
+            delay={BLUR_FADE_DELAY * 9}
+          >
+            Skills
+          </TextAnimate>
           <div className="flex flex-wrap gap-2">
             {DATA.skills.map((skill, id) => (
               <BlurFade
