@@ -1,0 +1,135 @@
+---
+title: "Managing 3 Checkout Apps in a Turborepo Monorepo"
+publishedAt: "2024-08-20"
+updatedAt: "2024-08-20"
+author: "Bestine Payyappilly"
+summary: "Lessons from building and maintaining a monorepo with multiple payment gateways, A/B testing, and shared infrastructure."
+video: "/NFOCheckout.mp4"
+---
+
+NFO Checkout started as a single checkout app. Now it's a monorepo with 3 production apps serving different user flows. Here's what I learned.
+
+## The Apps
+
+1. **NFO Books Checkout** - Educational materials purchase
+2. **NFO Registration Checkout** - Olympiad exam registration
+3. **NFA Checkout** - Financial Academy enrollment
+
+Each app shares core infrastructure but has unique flows and payment requirements.
+
+## Why Turborepo?
+
+When we added the second checkout app, copy-pasting code became unsustainable. Turborepo solved:
+
+- **Shared packages** - Common UI components, payment utilities, analytics
+- **Cached builds** - Only rebuild what changed
+- **Parallel execution** - Run tests/lints across all apps simultaneously
+
+```
+apps/
+  nfo-books/
+  nfo-registration/
+  nfa-checkout/
+packages/
+  ui/           # Shared components
+  payments/     # Razorpay, BillDesk, Stripe utilities
+  analytics/    # GA4, experiment tracking
+  config/       # Shared configs
+```
+
+## Multi-Gateway Payment Integration
+
+Different payment scenarios required different gateways:
+
+| Gateway | Use Case |
+|---------|----------|
+| Razorpay | Primary - UPI, cards, wallets |
+| BillDesk | School bulk payments |
+| Stripe | International cards |
+
+I built a universal payment service that abstracts gateway specifics:
+
+```tsx
+// Simplified payment abstraction
+const processPayment = async (gateway: Gateway, order: Order) => {
+  switch (gateway) {
+    case 'razorpay':
+      return await razorpayCheckout(order);
+    case 'billdesk':
+      return await billdeskRedirect(order);
+    case 'stripe':
+      return await stripeCheckout(order);
+  }
+};
+```
+
+## A/B Testing Framework
+
+We needed to optimize conversion funnels. Built a custom experiment system:
+
+1. Experiments defined in Firebase Remote Config
+2. User assigned to variant on first visit (sticky sessions)
+3. All funnel events tagged with experiment/variant
+4. Analysis in GA4
+
+```tsx
+const { variant } = useExperiment('checkout_flow_v2');
+
+// Render different UIs based on variant
+{variant === 'control' && <ClassicCheckout />}
+{variant === 'treatment' && <StreamlinedCheckout />}
+```
+
+## Dynamic Pricing Service
+
+Pricing logic was scattered everywhere. Centralized it:
+
+- Base product prices
+- Bundle discounts
+- Coupon code validation
+- COD charges
+- Tax calculations
+
+```tsx
+const pricing = usePricing(cart, couponCode);
+
+// Returns: { subtotal, discount, codCharge, tax, total }
+```
+
+## Payment Verification with Retry Logic
+
+Async payment status updates required exponential backoff:
+
+```tsx
+const verifyPayment = async (orderId: string, attempt = 1) => {
+  const status = await checkPaymentStatus(orderId);
+
+  if (status === 'pending' && attempt < 5) {
+    await delay(Math.pow(2, attempt) * 1000); // 2s, 4s, 8s, 16s
+    return verifyPayment(orderId, attempt + 1);
+  }
+
+  return status;
+};
+```
+
+## Error Monitoring with Sentry
+
+Production payment flows need visibility. Sentry integration catches:
+
+- Failed payment attempts
+- Form validation errors
+- API failures
+- JavaScript exceptions
+
+Tagged with user context (anonymized) and order details for debugging.
+
+## Key Learnings
+
+1. **Start with a monorepo** - Migration is painful; structure early
+2. **Abstract payment gateways** - Switching providers should be config changes
+3. **Experiment tracking is essential** - You can't optimize what you don't measure
+4. **Centralize pricing logic** - Scattered calculations lead to inconsistencies
+5. **Retry with backoff** - Payment webhooks aren't instant
+
+The monorepo now handles thousands of transactions across all three apps.

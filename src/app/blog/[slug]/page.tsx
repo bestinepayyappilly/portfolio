@@ -136,6 +136,27 @@ export default async function Blog({
           {formatDate(post.publishedAt)}
         </p>
       </div>
+      {(post.video || post.image) && (
+        <div className="my-6 rounded-2xl overflow-hidden border border-border shadow-lg">
+          {post.video ? (
+            <video
+              src={post.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto max-h-[400px] object-cover bg-black"
+            />
+          ) : post.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-auto max-h-[400px] object-cover"
+            />
+          ) : null}
+        </div>
+      )}
       <div className="my-6 flex w-full items-center">
         <div
           className="flex-1 h-px bg-border"

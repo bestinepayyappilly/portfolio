@@ -1,0 +1,96 @@
+---
+title: "Building ThirdMeal: A Full-Stack E-Commerce Platform with Razorpay"
+publishedAt: "2025-01-15"
+updatedAt: "2025-01-15"
+author: "Bestine Payyappilly"
+summary: "How I built a complete e-commerce checkout system with multi-step flows, OTP verification, and Razorpay payment integration."
+video: "/Thirdmeal.mp4"
+---
+
+ThirdMeal is a direct-to-consumer e-commerce platform for premium health-focused food products. Here's how I approached building it from scratch.
+
+## The Challenge
+
+Build a complete checkout experience that handles:
+- Cart management with real-time updates
+- Multi-step checkout flow
+- Phone verification via OTP
+- Multiple payment methods through Razorpay
+- Secure database design
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, Vite |
+| Backend | Supabase (PostgreSQL) |
+| Payments | Razorpay |
+| Forms | React Hook Form + Yup |
+| Animations | Framer Motion |
+
+## Multi-Step Checkout Flow
+
+The checkout follows a 4-step wizard pattern:
+
+```
+Cart → Contact Details → Payment → Confirmation
+```
+
+Each step persists state, so users can navigate back without losing data. I used React Hook Form's `FormProvider` to share form state across steps.
+
+## OTP Verification System
+
+Phone verification was critical for order security. The flow:
+
+1. User enters phone number
+2. Backend generates 6-digit OTP with 5-minute expiry
+3. OTP stored in database with timestamp
+4. Verification compares input against stored code
+5. Expired codes are automatically cleaned up
+
+```tsx
+// Simplified OTP verification
+const verifyOTP = async (phone: string, code: string) => {
+  const { data } = await supabase
+    .from('otp_codes')
+    .select('*')
+    .eq('phone', phone)
+    .eq('code', code)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+
+  return !!data;
+};
+```
+
+## Razorpay Integration
+
+Razorpay handles UPI, cards, net banking, and wallets. The integration pattern:
+
+1. Create order on backend (get `order_id`)
+2. Open Razorpay checkout modal
+3. Handle success/failure callbacks
+4. Verify payment signature on backend
+
+Key learning: Always verify the payment signature server-side before marking an order as paid.
+
+## Database Design
+
+Normalized schema with proper foreign keys:
+
+- `customers` - user details
+- `addresses` - shipping addresses
+- `orders` - order metadata
+- `order_items` - line items
+- `products` - product catalog
+
+Row-Level Security (RLS) policies ensure customers can only access their own data.
+
+## Key Takeaways
+
+1. **State persistence matters** - Users abandon carts when they lose progress
+2. **Verify everything server-side** - Never trust client-side payment confirmations
+3. **OTP expiry is essential** - Prevents code reuse and brute force attacks
+4. **Supabase RLS is powerful** - Database-level security simplifies backend logic
+
+The project handles the complete order lifecycle from browsing to delivery confirmation.

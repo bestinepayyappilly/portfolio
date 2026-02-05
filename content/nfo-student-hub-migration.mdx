@@ -1,0 +1,194 @@
+---
+title: "Migrating NFO Student Hub from React to Next.js"
+publishedAt: "2024-03-15"
+updatedAt: "2024-03-15"
+author: "Bestine Payyappilly"
+summary: "How I migrated a production student portal to Next.js while adding new payment integrations and improving performance."
+video: "/NFOPortal.mp4"
+---
+
+NFO Student Hub is the main portal for National Finance Olympiad students. It started as a Create React App project. Here's how I migrated it to Next.js.
+
+## Why Migrate?
+
+The original CRA app had issues:
+- Slow initial load (large JS bundle)
+- Poor SEO (client-side rendering)
+- No code splitting
+- Deployment complexity
+
+Next.js promised:
+- Server-side rendering
+- Automatic code splitting
+- Better caching
+- Simpler deployment
+
+## The Portal Features
+
+Before diving into migration, here's what the portal does:
+
+- **Student Dashboard** - View enrolled courses, exam results, certificates
+- **Self-Learning Checkout** - Purchase video courses
+- **Books Checkout** - Order physical textbooks
+- **Exam Registration** - Register for upcoming olympiads
+- **Payment History** - Track all transactions
+
+## Migration Strategy
+
+Incremental migration, not a rewrite:
+
+1. Set up Next.js with existing component library
+2. Migrate one route at a time
+3. Keep both apps running during transition
+4. Redirect traffic gradually
+
+### Step 1: App Router Setup
+
+```
+app/
+  layout.tsx        # Root layout with providers
+  page.tsx          # Dashboard
+  courses/
+    page.tsx
+  checkout/
+    books/page.tsx
+    courses/page.tsx
+  results/page.tsx
+```
+
+### Step 2: Component Migration
+
+Most components worked unchanged. Main changes:
+- `useRouter` from `next/navigation` (not `react-router-dom`)
+- `Link` from `next/link`
+- Image optimization with `next/image`
+
+### Step 3: Data Fetching
+
+Moved from `useEffect` fetching to Server Components:
+
+```tsx
+// Before (CRA)
+function Dashboard() {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    fetchCourses().then(setCourses);
+  }, []);
+
+  return <CourseList courses={courses} />;
+}
+
+// After (Next.js)
+async function Dashboard() {
+  const courses = await fetchCourses();
+  return <CourseList courses={courses} />;
+}
+```
+
+## Payment Gateway Integration
+
+The portal uses three payment gateways:
+
+| Gateway | Use Case |
+|---------|----------|
+| Razorpay | Individual purchases |
+| Stripe | International students |
+| BillDesk | School bulk orders |
+
+Each gateway has its own callback flow. Server Actions handle payment verification:
+
+```tsx
+'use server'
+
+async function verifyPayment(orderId: string) {
+  const payment = await razorpay.payments.fetch(orderId);
+
+  if (payment.status === 'captured') {
+    await db.orders.update({
+      where: { id: orderId },
+      data: { status: 'paid' }
+    });
+  }
+
+  return payment.status;
+}
+```
+
+## Performance Improvements
+
+### Before Migration
+- First Contentful Paint: 3.2s
+- Largest Contentful Paint: 4.8s
+- Bundle size: 1.2MB
+
+### After Migration
+- First Contentful Paint: 0.8s
+- Largest Contentful Paint: 1.4s
+- Initial JS: 180KB
+
+Key optimizations:
+- Server Components for static content
+- Route-based code splitting (automatic)
+- Image optimization
+- Font optimization with `next/font`
+
+## Challenges
+
+### Authentication State
+
+CRA used client-side auth context. Next.js needed:
+- Server-side session validation
+- Middleware for protected routes
+- Cookie-based tokens
+
+### Third-Party Scripts
+
+Payment gateway SDKs needed `'use client'` wrappers:
+
+```tsx
+'use client'
+
+import { useEffect } from 'react';
+
+export function RazorpayButton({ order }) {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    document.body.appendChild(script);
+  }, []);
+
+  // ... button logic
+}
+```
+
+### API Route Migration
+
+Express-style API routes moved to Next.js Route Handlers:
+
+```tsx
+// app/api/orders/route.ts
+export async function POST(request: Request) {
+  const body = await request.json();
+  const order = await createOrder(body);
+  return Response.json(order);
+}
+```
+
+## Deployment
+
+Moved from manual VPS deployment to Vercel:
+- Automatic deployments on push
+- Preview deployments for PRs
+- Edge caching
+- Analytics built-in
+
+## Key Learnings
+
+1. **Migrate incrementally** - Route by route, not all at once
+2. **Server Components by default** - Only add `'use client'` when needed
+3. **Test payment flows thoroughly** - Each gateway has quirks
+4. **Performance gains are real** - SSR and code splitting matter
+5. **Vercel simplifies ops** - Focus on code, not infrastructure
+
+The portal now serves thousands of students with sub-second load times.

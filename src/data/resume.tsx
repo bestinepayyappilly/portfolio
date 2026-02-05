@@ -17,7 +17,7 @@ export const DATA = {
   description:
     "Mobile Developer & Full Stack Engineer. I build production apps & websites handling payments and sensitive financial data.",
   summary:
-    "Started building in **2020**, teaching myself React Native, native iOS/Android, and full-stack development. Since then, I've shipped production apps handling **payments and sensitive financial data** across mobile and web. I work end-to-end — from architecture and UI to payment integrations and deployment. Currently focused on React Native, Next.js, and building checkout systems with multi-gateway payment flows.",
+    "Full-stack developer who ships. I build and own entire product ecosystems — from mobile apps to admin dashboards to checkout systems. Integrated payment flows across Razorpay, Cashfree, BillDesk, and Stripe. React Native and Next.js, end-to-end.",
   avatarUrl: "/me.png",
   skills: [
     { name: "React Native", icon: ReactLight },

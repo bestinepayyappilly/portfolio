@@ -1,0 +1,151 @@
+---
+title: "Building Wotter: A React Native Hydration Tracking App"
+publishedAt: "2024-06-10"
+updatedAt: "2024-06-10"
+author: "Bestine Payyappilly"
+summary: "Technical deep-dive into building a cross-platform hydration app with animations, local notifications, and subscription management."
+image: "/Wotter.png"
+---
+
+Wotter is a hydration tracking app for iOS and Android. Users log water intake, set reminders, and track their daily progress. Here's how I built it.
+
+## Tech Stack
+
+| Category      | Technology               |
+| ------------- | ------------------------ |
+| Framework     | React Native             |
+| Language      | TypeScript               |
+| State         | Redux Toolkit            |
+| Navigation    | React Navigation         |
+| Animations    | Reanimated + Skia        |
+| Storage       | MMKV                     |
+| Notifications | Local push notifications |
+
+## Multi-Step Onboarding
+
+First-time users go through an onboarding flow to calculate their recommended daily intake:
+
+1. Weight input
+2. Activity level
+3. Climate/environment
+4. Reminder preferences
+5. Goal confirmation
+
+Each step uses Reanimated for smooth page transitions. State persists across steps using Redux.
+
+```tsx
+// Calculate recommended intake
+const calculateGoal = (weight: number, activity: ActivityLevel) => {
+  const base = weight * 0.033; // 33ml per kg
+  const multiplier = activityMultipliers[activity];
+  return Math.round(base * multiplier * 1000); // Return in ml
+};
+```
+
+## Dashboard with Metrics
+
+The main screen shows:
+
+- Current intake vs goal (animated progress ring)
+- Quick-add drink buttons
+- Today's drink log
+- Weekly streak
+
+The progress ring uses Shopify's React Native Skia for smooth 60fps animations:
+
+```tsx
+<Canvas style={styles.canvas}>
+  <Path
+    path={progressPath}
+    style="stroke"
+    strokeWidth={12}
+    color={progressColor}
+  />
+</Canvas>
+```
+
+## Local Push Notifications
+
+Reminder system built with local notifications:
+
+1. User sets reminder intervals (every 2 hours, etc.)
+2. Notifications scheduled on app open
+3. Tapping notification opens drink logging
+4. Rescheduled after each log
+
+Key challenge: iOS limits scheduled notifications to 64. Solution: only schedule next 24 hours, refresh on app open.
+
+## MMKV for Storage
+
+React Native's AsyncStorage is slow. MMKV is synchronous and fast:
+
+```tsx
+import { MMKV } from "react-native-mmkv";
+
+const storage = new MMKV();
+
+// Sync read/write
+storage.set("dailyGoal", 2500);
+const goal = storage.getNumber("dailyGoal");
+```
+
+Used for:
+
+- User preferences
+- Daily logs
+- Streak data
+- Onboarding completion flag
+
+## Animations with Rive and Lottie
+
+Mix of animation libraries:
+
+- **Rive** - Interactive animations (drink splash effects)
+- **Lottie** - Achievement celebrations
+- **Reanimated** - UI transitions and gestures
+
+Rive files are smaller and support state machines, perfect for interactive feedback.
+
+## Subscription Management
+
+In-app subscriptions handled via RevenueCat:
+
+1. Product display from RevenueCat
+2. Purchase flow
+3. Entitlement checking
+4. Restore purchases
+
+```tsx
+const { isPro } = useSubscription();
+
+// Gate premium features
+{
+  isPro ? <UnlimitedReminders /> : <BasicReminders />;
+}
+```
+
+## Testing Strategy
+
+- **Jest** - Unit tests for calculations and utilities
+- **Component tests** - Critical UI flows
+- **Manual testing** - Both platforms before release
+
+Water intake calculations are heavily tested - wrong recommendations would break user trust.
+
+## Key Learnings
+
+1. **MMKV over AsyncStorage** - The performance difference is noticeable
+2. **Skia for custom graphics** - Native-level performance in RN
+3. **Schedule notifications conservatively** - Platform limits are real
+4. **RevenueCat simplifies subscriptions** - Don't build your own IAP system
+
+<video
+  src="/Wotter.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="w-fit h-[300px] rounded-2xl my-8 "
+/>
+
+Wotter is live on the [App Store](https://apps.apple.com/in/app/wotter/id6479811630).
