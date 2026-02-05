@@ -28,7 +28,7 @@ const getFontData = async () => {
     ]);
     return { cabinetGrotesk, clashDisplay };
   } catch (error) {
-    console.error("Failed to load fonts= ", error);
+    console.error("Failed to load fonts :", error);
     return null;
   }
 };
