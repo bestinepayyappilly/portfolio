@@ -16,7 +16,7 @@ const BLUR_FADE_DELAY = 0.04;
 
 export default function Page() {
   return (
-    <main className="min-h-dvh flex flex-col gap-14 relative justify-center">
+    <main className="min-h-dvh flex flex-col gap-14 relative">
       <section id="hero">
         <div className="mx-auto w-full max-w-4xl space-y-8">
           <div className="gap-2 gap-y-6 flex flex-col md:flex-row justify-between">
@@ -60,7 +60,7 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      {/* <section id="work">
+      <section id="work">
         <div className="flex min-h-0 flex-col gap-y-6">
           <TextAnimate
             as="h2"
@@ -179,7 +179,7 @@ export default function Page() {
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
           <ContactSection />
         </BlurFade>
-      </section> */}
+      </section>
     </main>
   );
 }

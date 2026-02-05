@@ -113,9 +113,7 @@ const styles = {
 export default async function Image() {
   try {
     const fontData = await getFontData();
-    const imageUrl = DATA.avatarUrl
-      ? new URL(DATA.avatarUrl, DATA.url).toString()
-      : undefined;
+    const imageUrl = new URL("/og.png", DATA.url).toString();
 
     return new ImageResponse(
       <div style={styles.outerWrapper}>
