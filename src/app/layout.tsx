@@ -23,12 +23,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
   title: {
-    default: DATA.name,
+    default: "Bestine Payyappilly | Mobile Developer | Frontend Developer",
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
   openGraph: {
-    title: `${DATA.name}`,
+    title: "Bestine Payyappilly | Mobile Developer | Frontend Developer",
     description: DATA.description,
     url: DATA.url,
     siteName: `${DATA.name}`,

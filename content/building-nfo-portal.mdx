@@ -1,0 +1,234 @@
+---
+title: "Building NFO Portal: Engineering a Production-Grade Financial Literacy Olympiad Platform"
+publishedAt: "2025-01-20"
+updatedAt: "2025-01-20"
+author: "Bestine Payyappilly"
+summary: "A deep dive into the architecture, design decisions, and engineering challenges behind India's National Finance Olympiad digital platform."
+video: "/NFOPortal.mp4"
+---
+
+<div style={{ position: 'relative' }}>
+
+<div className="not-prose hidden md:block" style={{ position: 'absolute', top: '20px', right: '-200px', width: '180px', zIndex: 1, pointerEvents: 'none', margin: 0 }}>
+  <img src="/MoneyIllustration.png" alt="" style={{ width: '100%', opacity: 0.5, rotate: '12deg' }} />
+</div>
+
+<div className="not-prose hidden md:block" style={{ position: 'absolute', top: '1400px', left: '-200px', width: '200px', zIndex: 1, pointerEvents: 'none', margin: 0 }}>
+  <img src="/docIllustration.png" alt="" style={{ width: '100%', opacity: 0.5, rotate: '-15deg' }} />
+</div>
+
+<div className="not-prose hidden md:block" style={{ position: 'absolute', top: '2800px', right: '-200px', width: '170px', zIndex: 1, pointerEvents: 'none', margin: 0 }}>
+  <img src="/idIllustration.png" alt="" style={{ width: '100%', opacity: 0.5, rotate: '8deg' }} />
+</div>
+
+The National Finance Olympiad (NFO) is more than just an exam — it's a comprehensive digital learning ecosystem for students in grades 5 through 8. When our team set out to build the NFO Portal, we had one non-negotiable requirement: **every interaction must feel instant, reliable, and delightful.** Students taking an olympiad exam can't afford a page crash. A kid unlocking their first badge shouldn't see it twice. A parent paying for study materials shouldn't wonder if the payment went through.
+
+This blog walks through the engineering decisions that power the platform — from our multi-layered authentication system to the gamified skill tree, from real-time exam proctoring to PDF certificate generation — and explains _why_ we built things the way we did.
+
+## Tech Stack at a Glance
+
+| Layer            | Technology                                           |
+| ---------------- | ---------------------------------------------------- |
+| Framework        | Next.js 15 (App Router) + React 19                   |
+| Language         | TypeScript (strict mode)                             |
+| State Management | Zustand 5 (client) + TanStack React Query 5 (server) |
+| Styling          | Tailwind CSS 4 + Radix UI primitives                 |
+| Animations       | Framer Motion 12 + Anime.js + Rive                   |
+| Forms            | React Hook Form + Zod validation                     |
+| Payments         | Razorpay                                             |
+| Analytics        | WebEngage                                            |
+| Documents        | jsPDF + html2canvas + React PDF                      |
+| Deployment       | Docker (multi-stage build)                           |
+
+The choice to pair **Zustand for client state** with **React Query for server state** is deliberate. Zustand gives us lightning-fast, zero-boilerplate stores for UI state like modals, form steps, and quiz progress. React Query handles the server cache layer — deduplicating requests, background refetching, and stale-while-revalidate patterns. Neither library tries to do the other's job, and the result is a state management layer that's both powerful and easy to reason about.
+
+## Architecture Highlights
+
+### 16 Zustand Stores, Zero Confusion
+
+One of the most common mistakes in frontend state management is the "god store" — a single monolithic state object that knows about everything. We took the opposite approach. The NFO Portal runs **16 purpose-built Zustand stores**, each owning a single domain:
+
+- **`authStore`** — tokens, login status, logout orchestration
+- **`quizStore`** — questions, answers, timer, bookmarks, tab-switch count
+- **`badgeUnlockStore`** — badge display state with localStorage-backed deduplication
+- **`checkoutStore`** — cart items with selective persistence (only the cart survives a refresh, not the payment state)
+- **`chooseExamDateStore`** — exam scheduling with API call blocking to prevent double-bookings
+
+Each store is self-contained. Each one knows how to clean itself up. And when a user logs out, we don't nuke everything — we cascade through each store with surgical precision.
+
+### The Logout Cascade
+
+Logout sounds simple until you think about it. In a system with 16 stores, persistent localStorage, analytics sessions, cross-tab state, and OTP tokens in sessionStorage, a "clean logout" means clearing **all of it** — in the right order, without race conditions.
+
+Our logout implementation in `authStore` coordinates a multi-phase cleanup:
+
+1. **Set the `isLoggingOut` flag** — this prevents other parts of the app from starting new operations during teardown
+2. **Clear localStorage tokens** — access token, refresh token, username, intended deep link destination
+3. **Reset all Zustand stores** — using dynamic imports to avoid circular dependencies. Each store's `clear` method is called individually
+4. **Clean up sessionStorage** — OTP verification tokens, navigation history, login session markers
+5. **Notify analytics** — WebEngage logout call
+6. **Record the reason** — "manual", "token_expired", or "device_change"
+
+We also listen for `storage` events to detect logout in other tabs. If you log out in one tab, every other tab responds immediately.
+
+## Authentication: More Than Just Login
+
+### The Multi-Stage Flow
+
+Authentication isn't a single step — it's a journey:
+
+```
+Student ID Entry -> OTP Verification -> Password Check -> Dashboard
+                                              |
+                                    [First time? Create password]
+                                    [Returning? Enter password]
+```
+
+Each stage has its own validation, its own error states, and its own analytics events. The OTP flow uses a timed expiration with automatic cleanup, and the password creation step enforces strength requirements via Zod schemas validated in real-time with React Hook Form.
+
+### Token Refresh That Actually Works
+
+Token refresh is one of those features that's easy to implement badly. Our Axios interceptor handles it with care:
+
+- **Selective retry**: Not all 400 errors mean "bad token." We maintain an explicit whitelist of endpoints (like OTP verification) that should _never_ trigger a token refresh attempt
+- **Single retry**: Each request gets exactly one retry with a fresh token. No infinite loops
+- **Graceful failure**: If the refresh itself fails, we perform a clean logout with reason `"token_expired"` and redirect to login
+- **Endpoint-aware logout**: Some endpoints like `EXAM_CARD_DETAILS` should _never_ trigger a logout, even on a 401
+
+This "endpoint-aware error handling matrix" encodes deep product knowledge about which errors are transient and which are terminal.
+
+## Deep Links That Survive Authentication
+
+Here's a real user scenario: a student receives a WhatsApp message with a link to a specific practice test. They tap it. They're not logged in. What happens?
+
+In many apps, the answer is "they get sent to the login page and lose the deep link forever." In NFO Portal, we built a **deep link preservation system** that works across the entire authentication flow:
+
+1. **`useAuthGuard` detects the deep link** — it inspects `window.location.pathname` and query parameters
+2. **Route-specific parsing** — checkout links preserve `itemId` and `userName`, PDF viewer links preserve `tab` and `activityId`, practice test links preserve `quizId` and `level`
+3. **Legacy route translation** — old `/dashboard/gamescreen` links are transparently rewritten to `/dashboard/pdf-viewer?tab=Activities`
+4. **The destination is stored in localStorage** — survives the multi-step login flow (OTP, password, etc.)
+5. **After login, the user is routed to their intended destination** — not the generic dashboard
+
+This works even if the student has to create a password for the first time, which adds two extra navigation steps between "tap link" and "see content."
+
+## Gamification: The Skill Tree
+
+The skill tree is the centerpiece of the NFO Portal's engagement strategy. Students progress through four color-coded branches (Orange, Green, Blue, Purple), each containing chapters with three types of entities: **Activities**, **Quizzes**, and **Games**. Completing entities unlocks badges, and badges unlock the next tier of content.
+
+### Badge Unlock Detection Without False Positives
+
+The trickiest engineering challenge in the skill tree isn't rendering it — it's detecting _when a badge was just unlocked_ versus _when we're loading data that shows an already-unlocked badge_.
+
+Our solution uses **ref-based differential state comparison**:
+
+1. On every data fetch, we build a `Map` of all entities keyed by `{type}_{contentId}_{badgeId}`
+2. We compare each entity's `isUnlocked` status against a `useRef`-stored snapshot from the previous fetch
+3. A badge unlock event fires **only if**: the entity was previously locked, is now unlocked, AND this isn't the first data fetch
+4. Each badge unlock event is further deduplicated via a `Set` persisted in localStorage
+
+The first-fetch skip is critical. Without it, every page load would show badge unlock animations for every badge the student has ever earned.
+
+### Confetti and Celebration
+
+When a badge IS newly unlocked, we go all out: the `BadgeUnlockedDialog` fires with a confetti burst (canvas-confetti), the badge details are displayed in a Radix UI modal, and a WebEngage analytics event records the achievement with full context.
+
+## Practice Tests: Built-In Exam Proctoring
+
+The practice test system isn't just a quiz engine — it includes lightweight proctoring features designed for a student audience:
+
+### Tab Switch Detection
+
+Every time a student switches away from the exam tab (via `visibilitychange` event), the `quizStore` increments a `tabSwitchCount`. This count is submitted alongside the quiz answers, giving educators visibility into potential integrity issues without being heavy-handed.
+
+### Timer with State Persistence
+
+The quiz timer runs in Zustand with persist middleware. If a student accidentally closes the tab and reopens it, their timer picks up where it left off — they don't get a fresh clock. The questions, selected answers, and bookmarked questions are all persisted too.
+
+### Bookmarking and Navigation
+
+Students can bookmark questions to review later, navigate freely between questions, and see a visual map of which questions they've answered, skipped, or bookmarked. The entire state machine lives in `quizStore` with atomic updates.
+
+## Certificate Generation: React Components to PDF
+
+When a student completes the Olympiad, they receive a downloadable certificate. The engineering challenge: certificates are designed as React components (with dynamic data like name, rank, and scores), but they need to be exported as high-quality PDFs.
+
+### The Rendering Pipeline
+
+1. **Certificate type determination**: A priority-based function evaluates the student's rank, exam type, zonal qualification, and award category to select the right certificate template
+2. **Off-screen rendering**: We create a hidden `div` positioned at `-9999px`, mount the React certificate component into it, and render it at a fixed 847x600px resolution
+3. **High-fidelity capture**: `html2canvas` captures the div at **4x scale** with CORS enabled, producing a crisp canvas even on retina displays
+4. **PDF generation**: `jsPDF` creates a landscape PDF at the exact certificate dimensions, adds the canvas as a compressed PNG, and triggers the download
+5. **Cleanup**: The temporary React root is unmounted, the hidden div is removed, and a timeout guard ensures the process never hangs indefinitely
+
+## Payment Integration: Three Flows, One Checkout
+
+The NFO Portal handles three distinct payment types through Razorpay, each with its own endpoint and validation:
+
+1. **Store items** — guidebooks, sample papers, advanced materials (requires shipping address for physical items)
+2. **Doubt-clearing sessions** — one-on-one tutoring with a unique booking ID
+3. **Pre-Olympiad live sessions** — group sessions tied to specific event IDs
+
+All three flows share a common checkout UI but diverge at the API layer. The `checkoutStore` uses Zustand's `partialize` option to persist only the cart items — not the payment state. This means if a payment fails and the student refreshes, their cart is intact, but the failed payment state is gone.
+
+## Games: Public Access with Authenticated Scoring
+
+The NFO Portal integrates three external game platforms via iframe embedding. The clever part is the **dual-access model**:
+
+- **Public access** (`/games`): Anyone can play. A grade selector determines which game loads. Scores are _not_ saved
+- **Authenticated access** (from the dashboard): Logged-in students play the same games, but scores are saved to the backend and count toward skill tree progress
+
+This is implemented through a **wrapper pattern**: `usePublicGameScore` wraps `useGameScore`, adding validation gates before delegating to the original hook's `saveScore` method.
+
+## Analytics: 1,200+ Lines of Intentional Tracking
+
+The analytics layer isn't an afterthought. At 1,200+ lines, `analytics.ts` is one of the largest files in the codebase. Key patterns:
+
+### Safe Tracking
+
+Every analytics call goes through `safeTrack()`, which checks for SSR context, WebEngage availability, and wraps the call in a try-catch. If analytics fails, the app keeps working.
+
+### Request Deduplication
+
+The `updateSkillTreeCompletionRate()` function uses a module-level promise cache. If a skill tree update is already in flight, subsequent calls return the existing promise instead of firing a duplicate request.
+
+## Performance Optimizations
+
+No single optimization makes the app fast. It's the accumulation of dozens of small decisions:
+
+- **Production console removal**: Next.js compiler strips all `console.log` calls in production
+- **Dynamic imports everywhere**: Analytics, PDF generation, and badge stores are loaded only when needed
+- **React Query caching**: 5-minute stale time, 10-minute refetch intervals, request deduplication
+- **Grade-gated API calls**: Skill map data is only fetched for grades 5-8
+- **Image optimization**: Next.js Image component with CDN, 30-day cache TTL, WebP/AVIF conversion
+- **Selective state persistence**: Only persist what matters. Quiz progress? Yes. Modal open state? No
+
+## Security Considerations
+
+- **Email encryption**: RSA-OAEP-SHA256 encryption for email addresses sent to analytics
+- **Content Security Policy**: CSP headers restrict script execution to trusted sources
+- **Cross-tab logout**: Storage event listeners ensure logout propagates to all open tabs
+- **Device change detection**: Logout reasons distinguish manual logout from forced logout
+- **OTP cleanup**: Session storage tokens are cleared on logout to prevent replay
+
+## Docker: Multi-Stage Production Build
+
+The deployment pipeline uses a two-stage Docker build:
+
+1. **Builder stage**: Node 18, installs dependencies, runs build with production optimizations
+2. **Runtime stage**: Node 18-slim (minimal attack surface), copies only the build artifacts, runs on port 3000
+
+## Key Learnings
+
+1. **State persistence is a feature, not a default.** Don't persist everything. Persist quiz answers (because students close tabs). Don't persist modal states (because they should reset on navigation)
+
+2. **Error handling is product design.** The difference between "rate limited on OTP" and "expired token" is the difference between showing a toast and logging the user out
+
+3. **Composition beats modification.** The public game score hook wraps the authenticated one. Everywhere we could, we composed behavior instead of modifying existing code
+
+4. **First-fetch is not the same as a state change.** Loading data that shows existing state should never trigger events designed for state transitions
+
+5. **Analytics is infrastructure, not an afterthought.** Build analytics like you build APIs — with types, validation, and graceful degradation
+
+Building an educational platform for thousands of students across India has been a masterclass in balancing engineering rigor with product pragmatism. Every badge unlock, every preserved deep link, every graceful token refresh is invisible to the student — and that's exactly the point.
+
+</div>
