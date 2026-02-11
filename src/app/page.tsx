@@ -4,6 +4,7 @@ import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
+import type { Metadata } from "next";
 import Markdown from "react-markdown";
 import ContactSection from "@/components/section/contact-section";
 import HackathonsSection from "@/components/section/hackathons-section";
@@ -13,6 +14,12 @@ import { ArrowUpRight } from "lucide-react";
 import { TextAnimate } from "@/components/ui/text-animate";
 
 const BLUR_FADE_DELAY = 0.04;
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: DATA.url,
+  },
+};
 
 export default function Page() {
   return (

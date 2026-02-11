@@ -27,6 +27,15 @@ export const metadata: Metadata = {
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
+  keywords: [
+    "Bestine Payyappilly",
+    "Mobile Developer",
+    "Frontend Developer",
+    "React Native",
+    "Next.js",
+    "Full Stack Engineer",
+    "Bangalore",
+  ],
   openGraph: {
     title: "Bestine Payyappilly | Mobile Developer | Frontend Developer",
     description: DATA.description,

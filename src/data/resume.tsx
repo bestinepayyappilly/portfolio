@@ -11,7 +11,7 @@ import { Swift } from "@/components/ui/svgs/swift";
 export const DATA = {
   name: "Bestine Payyappilly",
   initials: "BP",
-  url: "https://bestine.dev",
+  url: "https://bestinepayyappilly.com",
   location: "Bangalore, Karnataka, India",
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description:

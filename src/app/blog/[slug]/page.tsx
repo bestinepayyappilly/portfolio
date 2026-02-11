@@ -44,15 +44,20 @@ export async function generateMetadata({
     image,
   } = post;
 
+  const canonicalUrl = `${DATA.url}/blog/${slug}`;
+
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description,
       type: "article",
       publishedTime,
-      url: `${DATA.url}/blog/${slug}`,
+      url: canonicalUrl,
       ...(image && {
         images: [
           {
