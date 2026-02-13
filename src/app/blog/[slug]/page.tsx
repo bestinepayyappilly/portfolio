@@ -157,7 +157,7 @@ export default async function Blog({
             <img
               src={post.image}
               alt={post.title}
-              className="w-full h-auto max-h-[400px] object-cover"
+              className={`w-full h-auto ${post.imageContain ? "max-h-50 object-contain p-6" : "max-h-100 object-cover"}`}
             />
           ) : null}
         </div>

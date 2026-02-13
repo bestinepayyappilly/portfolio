@@ -15,6 +15,7 @@ const posts = defineCollection({
         author: z.string().optional(),
         summary: z.string(),
         image: z.string().optional(),
+        imageContain: z.boolean().optional(),
         video: z.string().optional(),
         content: z.string(),
     }),

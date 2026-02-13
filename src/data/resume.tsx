@@ -83,7 +83,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Senior Mobile Developer",
-      logoUrl: "/StreakLogo.png",
+      logoUrl: "/StreakLogo.webp",
       start: "End of 2021",
       end: "2024",
       description:

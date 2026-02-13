@@ -3,10 +3,77 @@
 import { useState, useRef, useEffect, type ComponentProps } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
-import { codeToHtml } from "shiki/bundle/web";
+import { bundledLanguagesInfo } from "shiki/bundle/web";
 import { cn } from "@/lib/utils";
 
 type CodeBlockProps = ComponentProps<"pre">;
+
+const webBundledIds = new Set(bundledLanguagesInfo.map((l) => l.id));
+const aliasToId = new Map<string, string>();
+for (const lang of bundledLanguagesInfo) {
+  for (const alias of lang.aliases ?? []) {
+    aliasToId.set(alias, lang.id);
+  }
+}
+
+function resolveWebLang(lang: string): string | null {
+  if (webBundledIds.has(lang)) return lang;
+  const mapped = aliasToId.get(lang);
+  return mapped ?? null;
+}
+
+let highlighterPromise: ReturnType<typeof getHighlighter> | null = null;
+
+async function getHighlighter() {
+  const { createHighlighterCore } = await import("shiki/core");
+  const { createOnigurumaEngine } = await import("shiki/engine/oniguruma");
+  return createHighlighterCore({
+    themes: [
+      import("shiki/themes/github-light"),
+      import("shiki/themes/github-dark"),
+    ],
+    engine: createOnigurumaEngine(import("shiki/wasm")),
+  });
+}
+
+async function highlightCode(code: string, lang: string): Promise<string> {
+  // For languages included in the web bundle, use the fast sync highlighter
+  const webLang = resolveWebLang(lang);
+  if (webLang || lang === "plaintext") {
+    const { codeToHtml } = await import("shiki/bundle/web");
+    return codeToHtml(code, {
+      lang: (webLang ?? lang) as any,
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    });
+  }
+
+  // For other languages, use the full highlighter with dynamic loading
+  if (!highlighterPromise) highlighterPromise = getHighlighter();
+  const highlighter = await highlighterPromise;
+
+  const loadedLangs = highlighter.getLoadedLanguages();
+  if (!loadedLangs.includes(lang)) {
+    try {
+      await highlighter.loadLanguage(
+        (await import(`shiki/langs/${lang}.mjs`)).default
+      );
+    } catch {
+      // Language not available in shiki at all — fall back to plaintext
+      return highlighter.codeToHtml(code, {
+        lang: "plaintext",
+        themes: { light: "github-light", dark: "github-dark" },
+        defaultColor: false,
+      });
+    }
+  }
+
+  return highlighter.codeToHtml(code, {
+    lang,
+    themes: { light: "github-light", dark: "github-dark" },
+    defaultColor: false,
+  });
+}
 
 function extractLanguage(className?: string): string {
   if (!className) return "plaintext";
@@ -33,14 +100,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     const nextTitle = codeEl.getAttribute("data-title");
     const nextClassName = codeEl.className || "";
 
-    void codeToHtml(codeText, {
-      lang: lang as any,
-      themes: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      defaultColor: false,
-    })
+    void highlightCode(codeText, lang)
       .then((html) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
