@@ -25,14 +25,10 @@ function resolveWebLang(lang: string): string | null {
 let highlighterPromise: ReturnType<typeof getHighlighter> | null = null;
 
 async function getHighlighter() {
-  const { createHighlighterCore } = await import("shiki/core");
-  const { createOnigurumaEngine } = await import("shiki/engine/oniguruma");
-  return createHighlighterCore({
-    themes: [
-      import("shiki/themes/github-light"),
-      import("shiki/themes/github-dark"),
-    ],
-    engine: createOnigurumaEngine(import("shiki/wasm")),
+  const { createHighlighter } = await import("shiki");
+  return createHighlighter({
+    themes: ["github-light", "github-dark"],
+    langs: [],
   });
 }
 
@@ -55,9 +51,7 @@ async function highlightCode(code: string, lang: string): Promise<string> {
   const loadedLangs = highlighter.getLoadedLanguages();
   if (!loadedLangs.includes(lang)) {
     try {
-      await highlighter.loadLanguage(
-        (await import(`shiki/langs/${lang}.mjs`)).default
-      );
+      await highlighter.loadLanguage(lang as any);
     } catch {
       // Language not available in shiki at all — fall back to plaintext
       return highlighter.codeToHtml(code, {
