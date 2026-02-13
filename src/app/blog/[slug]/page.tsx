@@ -142,7 +142,7 @@ export default async function Blog({
         </p>
       </div>
       {(post.video || post.image) && (
-        <div className="my-6 rounded-2xl overflow-hidden border border-border shadow-lg">
+        <div className="my-6 rounded-2xl overflow-hidden">
           {post.video ? (
             <video
               src={post.video}
@@ -150,7 +150,7 @@ export default async function Blog({
               loop
               muted
               playsInline
-              className="w-full h-auto max-h-[400px] object-cover bg-black"
+              className="w-full h-auto max-h-[400px] object-contain"
             />
           ) : post.image ? (
             // eslint-disable-next-line @next/next/no-img-element
