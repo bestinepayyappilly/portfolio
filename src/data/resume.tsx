@@ -99,7 +99,7 @@ export const DATA = {
       start: "2024",
       end: "End of 2025",
       description:
-        "Currently serving as Frontend Lead for this Dubai-based startup while maintaining my full-time role, building scalable applications with Next.js.",
+        "Served as the Frontend Lead for this Dubai-based startup while maintaining my full-time role, building scalable applications with Next.js.",
     },
   ],
   education: [
