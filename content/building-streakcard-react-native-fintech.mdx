@@ -1,0 +1,905 @@
+---
+title: "Building StreakCard: A Deep Dive Into Engineering a React Native Fintech App for Gen Z"
+publishedAt: "2023-09-15"
+updatedAt: "2024-01-10"
+author: "Bestine Payyappilly"
+summary: "How we built a production fintech app for teenagers in React Native — covering 7-layer security, ECDH encryption with native modules, CodePush OTA updates, and 5 animation systems that make it feel alive."
+video: "/StreakVideo.mp4"
+---
+
+StreakCard is a fintech app built for teenagers — a prepaid card with savings, gold investing, gamification, and parental controls. Building a production fintech app in React Native meant solving problems most tutorials never cover: end-to-end encryption with native modules, runtime threat detection, over-the-air updates that don't break things, and animations smooth enough that users forget they're in a cross-platform app.
+
+This is the story of how we built it.
+
+---
+
+## The Stack at a Glance
+
+```
+React Native (Hermes Engine)
+├── State Management:    Redux
+├── Navigation:          React Navigation (Stack + Tab + Shared Element)
+├── Animations:          Reanimated 3 + Lottie + Rive + Skia
+├── Security:            FreeRASP + JailMonkey + SSL Pinning + ECDH Native Modules
+├── OTA Updates:         Microsoft CodePush via AppCenter
+├── Error Tracking:      Sentry
+├── Analytics:           Firebase + MoEngage
+├── Image Loading:       FastImage with preload wrappers
+├── Push Notifications:  Firebase Cloud Messaging
+├── Remote Config:       Firebase Remote Config
+├── Deep Linking:        Firebase Dynamic Links
+└── Encrypted Storage:   react-native-encrypted-storage
+```
+
+---
+
+## Security: Defense in Depth
+
+When you're building an app that holds real money for minors, security isn't a feature — it's the foundation. We implemented **seven layers of security** that work together.
+
+### Layer 1: Jailbreak & Root Detection (JailMonkey)
+
+The very first line of defense runs before the app even mounts. In `index.js`:
+
+```typescript
+import JailMonkey from "jail-monkey";
+import { DeviceRooted } from "@app/screens-v2/utilities/DeviceRooted";
+
+AppRegistry.registerComponent(appName, () =>
+  JailMonkey.isJailBroken() && !__DEV__ ? DeviceRooted : App,
+);
+```
+
+If the device is rooted or jailbroken in production, we don't render the app at all. Instead, users see a security warning screen. The detection is logged to Sentry for monitoring:
+
+```typescript
+Sentry.captureException(new Error("Jail Monkey Detected Device as Rooted"));
+```
+
+### Layer 2: Runtime Application Self-Protection (FreeRASP)
+
+JailMonkey catches the obvious cases. **FreeRASP by Talsec** goes deeper — it's a RASP (Runtime Application Self-Protection) SDK that continuously monitors for threats while the app is running.
+
+We built a custom hook `useFreeRaspUILayer` that checks for **11 distinct threat vectors**:
+
+```typescript
+// rsapcheck.ts
+export const commonChecks = [
+  { name: "Privileged Access", status: "ok" }, // Root/Jailbreak
+  { name: "Debug", status: "ok" }, // Debugger attached
+  { name: "Simulator", status: "ok" }, // Running on emulator
+  { name: "App Integrity", status: "ok" }, // APK/IPA tampered
+  { name: "Unofficial Store", status: "ok" }, // Sideloaded
+  { name: "Hooks", status: "ok" }, // Frida/XPosed detected
+  { name: "Device Binding", status: "ok" }, // Device integrity
+  { name: "Secure Hardware Not Available", status: "ok" },
+  { name: "Passcode", status: "ok" }, // No device lock set
+];
+
+export const iosChecks = [
+  { name: "Device ID", status: "ok" },
+  { name: "Passcode Change", status: "ok" },
+];
+```
+
+The hook initializes FreeRASP with our app's certificate hash and bundle ID:
+
+```typescript
+const config = {
+  androidConfig: {
+    packageName: "com.streakcard",
+    certificateHashes: ["<REDACTED_CERTIFICATE_HASH>"],
+  },
+  iosConfig: {
+    appBundleId: "com.streak.app",
+    appTeamId: "<REDACTED_TEAM_ID>",
+  },
+  watcherMail: "technical@streakcard.com",
+  isProd: true,
+};
+```
+
+When any threat is detected, the check flips to `'nok'` and we report the vulnerability matrix to Sentry:
+
+```typescript
+React.useEffect(() => {
+  let vulnerabilities = appChecks
+    .filter((item) => item.status == "nok")
+    .join(", ");
+  Sentry.captureException(new Error(`Device Blocked ${vulnerabilities}`));
+}, [apiOptionsJsonString]);
+```
+
+One interesting challenge: FreeRASP bundles SpongyCastle internally, which conflicted with our own SpongyCastle dependency for ECDH encryption. We solved this with a **patch-package** patch that excludes the conflicting dependency from FreeRASP's transitive dependencies.
+
+### Layer 3: SSL Certificate Pinning
+
+We pin certificates on both platforms to prevent MITM attacks, even if the device's CA store is compromised.
+
+**Android** uses the native network security config:
+
+```xml
+<domain-config cleartextTrafficPermitted="false">
+    <domain includeSubdomains="true">api.example.com</domain>
+    <pin-set>
+        <pin digest="SHA-256"><REDACTED_PIN_HASH_1></pin>
+        <pin digest="SHA-256"><REDACTED_PIN_HASH_2></pin>
+        <pin digest="SHA-256"><REDACTED_PIN_HASH_3></pin>
+    </pin-set>
+</domain-config>
+```
+
+**iOS** uses **TrustKit**, initialized in `AppDelegate.mm`:
+
+```objc
+static void SslPinningInitialization() {
+    NSDictionary *trustKitConfig = @{
+        kTSKSwizzleNetworkDelegates: @YES,
+        kTSKPinnedDomains: @{
+            @"api.example.com" : @{
+                kTSKIncludeSubdomains: @YES,
+                kTSKEnforcePinning: @YES,
+                kTSKPublicKeyHashes : @[
+                    @"<REDACTED_PIN_HASH_1>",
+                    @"<REDACTED_PIN_HASH_2>",
+                    @"<REDACTED_PIN_HASH_3>"
+                ]
+            }
+        }
+    };
+    [TrustKit initSharedInstanceWithConfiguration:trustKitConfig];
+}
+```
+
+We pin three certificates to handle rotation — if one expires, the backup pins keep the app functional while we release a certificate update.
+
+### Layer 4: Biometric Authentication
+
+The app supports fingerprint, Face ID, and device passcode fallback. Our `biometricAuth.tsx` utility handles the full lifecycle:
+
+```typescript
+export const checkAndCreateBiomtericKey = (payload: string) => {
+  return rnBiometrics.isSensorAvailable().then((resultObject) => {
+    const { available } = resultObject;
+    if (available) {
+      return rnBiometrics.biometricKeysExist().then(async (resultObject) => {
+        const { keysExist } = resultObject;
+        if (keysExist) {
+          return await createSignature(payload);
+        } else {
+          return await createKeys(payload);
+        }
+      });
+    } else {
+      return Promise.reject(BiometricFailedResponse.not_available);
+    }
+  });
+};
+```
+
+The biometric system doesn't just verify identity — it generates a **cryptographic signature** that the server validates. This means even if someone clones the app data, they can't forge authentication without the biometric-protected key.
+
+### Layer 5: Encrypted Storage
+
+All sensitive data (JWT tokens, PINs, user data) is stored using `react-native-encrypted-storage`, which uses Android's EncryptedSharedPreferences and iOS Keychain under the hood:
+
+```typescript
+export class Storage {
+  static async setItem(key: string, data: Object | string) {
+    await EncryptedStorage.setItem(
+      key,
+      typeof data === "string" ? data : JSON.stringify(data),
+    );
+  }
+}
+```
+
+On iOS, we also clear the Keychain on fresh installs to prevent data leakage from previous app installations:
+
+```objc
+static void ClearKeychainIfNecessary() {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HAS_RUN_BEFORE"] == NO) {
+        NSArray *secItemClasses = @[
+            (__bridge id)kSecClassGenericPassword,
+            (__bridge id)kSecClassInternetPassword,
+            (__bridge id)kSecClassCertificate,
+            (__bridge id)kSecClassKey,
+            (__bridge id)kSecClassIdentity
+        ];
+        for (id secItemClass in secItemClasses) {
+            NSDictionary *spec = @{(__bridge id)kSecClass: secItemClass};
+            SecItemDelete((__bridge CFDictionaryRef)spec);
+        }
+    }
+}
+```
+
+### Layer 6: RSA Encryption for Sensitive Payloads
+
+Beyond ECDH for card operations, we use RSA for certain API payloads:
+
+```typescript
+import { RSA } from "react-native-rsa-native";
+
+export class RSAEncryption {
+  public static async Encrypt(message: string): Promise<string> {
+    return await RSA.encrypt(message, SHA256DigestPublic);
+  }
+}
+```
+
+### Layer 7: ProGuard + Hermes Bytecode
+
+On Android release builds, we enable full ProGuard/R8 obfuscation:
+
+```gradle
+buildTypes {
+    release {
+        debuggable false
+        minifyEnabled true
+        shrinkResources true
+        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+}
+```
+
+Combined with Hermes engine (which compiles JavaScript to bytecode), the source code is double-obfuscated — making reverse engineering significantly harder.
+
+---
+
+## Custom Native Modules for Cryptography
+
+The crown jewel of our security architecture is the end-to-end encryption layer built with custom native modules. Card transaction data is encrypted before it leaves the device using ECDH key exchange + AES symmetric encryption.
+
+### Android (Kotlin)
+
+```kotlin
+class CryptoReactNative : ReactContextBaseJavaModule {
+    private val algorithmECDH = "ECDH"
+    private val primeCurve = "prime256v1"
+
+    @ReactMethod
+    fun generateKeys(promise: Promise) {
+        Security.removeProvider("BC")
+        Security.addProvider(BouncyCastleProvider())
+        val kpg = KeyPairGenerator.getInstance(algorithmECDH)
+        kpg.initialize(ECGenParameterSpec(primeCurve))
+        val keyPair = kpg.generateKeyPair()
+        // Return as hex-encoded strings via Promise
+    }
+
+    @ReactMethod
+    fun encryptData(serverPublicKey: String, localPrivateKey: String,
+                    value: String, promise: Promise) {
+        val keyAgreement = KeyAgreement.getInstance(algorithmECDH)
+        keyAgreement.init(privateKey)
+        keyAgreement.doPhase(publicKey, true)
+        val secretKey = keyAgreement.generateSecret(algorithmECDH)
+        promise.resolve(getEncryptData(secretKey, value))
+    }
+}
+```
+
+### iOS (Swift + Objective-C Bridge)
+
+```swift
+@objc(CryptoReactNativeIOS)
+class CryptoReactNativeIOS: NSObject {
+    let keys = try? CC.EC.generateKeyPair(256)
+
+    @objc func encrypt(_ valueToEncrypt: String, serverPublicKey: String,
+                       privateKey: String, resolve: RCTPromiseResolveBlock,
+                       rejecter reject: RCTPromiseRejectBlock) {
+        let serverPublicKeyData = dataWithHexString(hex: serverPublicKey)
+        let sharedSecret = try? CC.EC.computeSharedSecret(
+            keys!.0, publicKey: serverPublicKeyData
+        )
+        resolve(valueToEncrypt.aes_Encrypt(
+            AES_KEY: sharedSecret!.withUnsafeBytes(Array.init)
+        ))
+    }
+}
+```
+
+### JavaScript Usage (Platform Branching)
+
+```typescript
+const encrypted =
+  Platform.OS === "ios"
+    ? await NativeModules.CryptoReactNativeIOS.encrypt(
+        JSON.stringify(data),
+        serverPublicKey,
+        privateKey,
+      )
+    : await CryptoReactNative.encryptData(
+        serverPublicKey,
+        privateKey,
+        JSON.stringify(data),
+      );
+```
+
+---
+
+## Over-the-Air Updates with Microsoft CodePush
+
+In fintech, you can't wait a week for App Store review when there's a critical bug. **Microsoft CodePush** lets us push JavaScript bundle updates instantly to users.
+
+### Configuration
+
+```typescript
+// App.tsx
+let CodePushOptions = {
+  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
+  installMode: CodePush.InstallMode.IMMEDIATE,
+  mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
+};
+
+export default CodePush(CodePushOptions)(Sentry.wrap(App));
+```
+
+We check for updates every time the app comes to foreground (`ON_APP_RESUME`), and install immediately — no restart required.
+
+### Version Tracking
+
+Each CodePush release gets a distribution version tied to the native binary:
+
+```typescript
+export const CodepushUtils = {
+  CODEPUSH_DIST: Platform.OS === "android" ? "v69" : "v46",
+  VERSION_NAME: Platform.OS === "android" ? "19.2.9" : "1.90.6",
+};
+```
+
+This feeds into Sentry for accurate stack trace mapping:
+
+```typescript
+Sentry.init({
+  release: `${BUNDLE_ID}@${NATIVE_VERSION}+codepush@${CODEPUSH_DIST}`,
+  dist: CODEPUSH_DIST,
+  attachStacktrace: true,
+});
+```
+
+### Update Experience
+
+We built a custom `CodepushModal` component that shows download progress with a Lottie animation:
+
+```typescript
+class CodepushModal extends Component {
+  codePushStatusDidChange(syncStatus) {
+    switch (syncStatus) {
+      case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+        this.setState({ syncMessage: "Downloading Update." });
+        break;
+      case CodePush.SyncStatus.INSTALLING_UPDATE:
+        this.setState({ syncMessage: "Installing update." });
+        break;
+    }
+  }
+
+  codePushDownloadDidProgress({ receivedBytes, totalBytes }) {
+    const downloadProgress = (receivedBytes / totalBytes) * 100;
+    this.setState({ progress: downloadProgress });
+  }
+
+  render() {
+    return (
+      <Modal isVisible={isVisible}>
+        <LottieView
+          progress={Math.round(this.state.progress) / 100}
+          source={require("./download.json")}
+        />
+        <GeneralText text={this.state.syncMessage} />
+      </Modal>
+    );
+  }
+}
+```
+
+### Deployment Pipeline
+
+```json
+{
+  "bundle:codepush:android": "appcenter codepush release-react -a StreakCard/Streak-Android -d Staging --sourcemap-output --output-dir ./build",
+  "bundle:codepush:ios": "appcenter codepush release-react -a StreakCard/Streak-Ios -d Staging --sourcemap-output --output-dir ./build"
+}
+```
+
+We also upload source maps to Sentry after each CodePush release to maintain debuggable crash reports.
+
+---
+
+## Animations: Making It Feel Native
+
+A fintech app for teenagers needs to feel alive. We used **five different animation systems** depending on the use case.
+
+### React Native Reanimated (35+ files)
+
+Reanimated 3 is our primary animation library. We use it for everything from entrance animations to complex gesture-driven interactions.
+
+**Staggered List Animations** — Items fade and slide in with index-based delays:
+
+```typescript
+<Animated.View entering={FadeInDown.duration(600).delay(index * 150)}>
+  <FeatureCard data={item} />
+</Animated.View>
+```
+
+**Gold Price Pulsing Dot** — A live indicator that pulses infinitely on the gold price graph:
+
+```typescript
+const animatedGoldDotValue = useSharedValue(0);
+
+useEffect(() => {
+  animatedGoldDotValue.value = withRepeat(
+    withTiming(1, { duration: 1000 }),
+    -1,
+    true,
+  );
+}, []);
+
+const dotStyle = useAnimatedStyle(() => ({
+  transform: [
+    {
+      scale: interpolate(animatedGoldDotValue.value, [0, 1], [0.5, 1.5]),
+    },
+  ],
+  opacity: interpolate(animatedGoldDotValue.value, [0, 1], [1, 0.3]),
+}));
+```
+
+**Success Page Multi-Step Animation** — Image scales in, then the success sheet slides up from the bottom with a delayed reveal:
+
+```typescript
+const fadeInAnimation = useSharedValue(0);
+const animatedValue = useSharedValue(0);
+
+useEffect(() => {
+  RNReactNativeHapticFeedback.trigger("clockTick");
+  fadeInAnimation.value = withTiming(1, { duration: 700 });
+  animatedValue.value = withDelay(
+    1500,
+    withTiming(1, { duration: 600, easing: Easing.ease }),
+  );
+}, []);
+
+const imageStyle = useAnimatedStyle(() => ({
+  opacity: interpolate(fadeInAnimation.value, [0, 1], [0, 1]),
+  transform: [
+    {
+      scale: interpolate(fadeInAnimation.value, [0, 0.5, 1], [1, 1.1, 1]),
+    },
+  ],
+}));
+
+const contentStyle = useAnimatedStyle(() => ({
+  transform: [
+    {
+      translateY: interpolate(
+        animatedValue.value,
+        [0, 1],
+        [ScreenHeight - insets.bottom, -100],
+      ),
+    },
+  ],
+}));
+```
+
+### Lottie Animations (15+ files)
+
+We use Lottie for complex vector animations that would be impractical to code:
+
+**Tab Bar Icons** — Each tab plays a micro-animation when selected:
+
+```typescript
+return focused ? (
+  <AnimatedLottieView
+    source={animationSource}
+    autoPlay={false}
+    loop={false}
+    ref={(ref) => {
+      if (focused) ref?.play(0, 30);
+    }}
+  />
+) : (
+  <Image source={icon} />
+);
+```
+
+### Rive Animations
+
+For more interactive animations, we use **Rive** (which supports state machines):
+
+**Easter Egg** — A hidden robot animation triggered by long press with haptic feedback:
+
+```typescript
+<TouchableOpacity
+  onLongPress={() => {
+    Vibration.vibrate(1000);
+    riveRef.current?.play();
+  }}
+>
+  <Rive
+    autoplay={false}
+    ref={riveRef}
+    resourceName="robot_easter"
+    fit={Fit.Cover}
+  />
+</TouchableOpacity>
+```
+
+### Animated SVG Backgrounds
+
+For the savings section, we animate individual SVG elements using Reanimated's `useAnimatedProps`:
+
+```typescript
+const dot1 = useSharedValue({ x: 53, y: 66 });
+
+useEffect(() => {
+  dot1.value = withRepeat(
+    withSequence(
+      withTiming({ x: 65, y: 69 }, { duration: 5000 }),
+      withTiming({ x: 89, y: 66 }, { duration: 5000 }),
+    ),
+    -1,
+    true,
+  );
+}, []);
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+const animatedProps1 = useAnimatedProps(() => ({
+  x: dot1.value.x,
+  y: dot1.value.y,
+}));
+```
+
+Multiple dots animate in independent patterns, creating a subtle, organic floating effect.
+
+---
+
+## Shared Element Transitions
+
+We use `react-navigation-shared-element` for seamless transitions between screens. Elements visually morph from their position on one screen to another.
+
+```typescript
+import { createSharedElementStackNavigator } from "react-navigation-shared-element";
+
+const Stack = createSharedElementStackNavigator();
+
+// Source screen
+<SharedElement id="Full-KYC-Icon">
+  <Image source={FullKYCIcon} />
+</SharedElement>
+
+<SharedElement id="GoldCard">
+  <Image source={GoldCard} />
+</SharedElement>
+
+<SharedElement id="CreateAccountButton">
+  <Button />
+</SharedElement>
+```
+
+We use shared transitions for KYC icons, gold cards, onboarding buttons, and landing page descriptions — creating a sense of spatial continuity as users navigate through flows.
+
+---
+
+## Skia-Powered UI: Squircles and Animated Gradients
+
+One of our signature UI elements is the **Squircle** — the smooth, superellipse-shaped container that Apple popularized. We render them using `@shopify/react-native-skia`:
+
+```typescript
+const Squircle = ({
+  borderRadius,
+  backgroundColor,
+  borderSmoothing,
+  children,
+  maskChildren,
+  colors,
+}) => {
+  const path = useMemo(() => {
+    return drawSquirclePath({
+      borderSmoothing,
+      borderRadius,
+      width,
+      height,
+    });
+  }, [width, height, borderRadius, borderSmoothing]);
+
+  return (
+    <View style={style} onLayout={onLayout}>
+      <Canvas style={StyleSheet.absoluteFill}>
+        <Group>
+          <Path path={path} color={backgroundColor}>
+            {colors && (
+              <LinearGradient
+                start={vec(0, 0)}
+                end={vec(100, 256)}
+                colors={colors}
+              />
+            )}
+          </Path>
+        </Group>
+      </Canvas>
+      {children}
+    </View>
+  );
+};
+```
+
+The Squircle supports customizable border radius and smoothing factor, gradient fills via Skia's `LinearGradient`, mask mode for clipping children to the squircle shape, and arbitrary Skia children for advanced compositions.
+
+### Animated Gradient Backgrounds
+
+We also use Skia for full-screen animated gradient backgrounds:
+
+```typescript
+const AnimatedLinearGradientBG = ({ colors, radialColors }) => {
+  const animatedValue = useSharedValue(0);
+
+  useEffect(() => {
+    animatedValue.value = withTiming(450, { duration: 1500 });
+  }, []);
+
+  return (
+    <Canvas>
+      <Rect x={0} y={0} width={ScreenWidth} height={ScreenHeight}>
+        <LinearGradient
+          start={vec(0, 0)}
+          end={vec(ScreenWidth / 2, ScreenHeight / 2)}
+          colors={colors}
+        />
+      </Rect>
+      <Rect x={0} y={0} width={ScreenWidth} height={ScreenHeight}>
+        <RadialGradient
+          c={vec(200, -200)}
+          r={animatedValue}
+          colors={radialColors}
+        />
+      </Rect>
+    </Canvas>
+  );
+};
+```
+
+This creates a radial gradient that expands outward over 1.5 seconds on screen entry — a subtle but polished effect.
+
+---
+
+## Custom Navigation Transitions
+
+We built five custom screen transition interpolators instead of relying on React Navigation's defaults:
+
+```typescript
+export const Fade = ({ current }) => ({
+  cardStyle: { opacity: current.progress },
+});
+
+export const Zoom = ({ current, next }) => ({
+  cardStyle: {
+    transform: [
+      {
+        scaleX: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+      },
+      {
+        scaleY: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+        }),
+      },
+    ],
+  },
+});
+
+export const Right = ({ current, layouts }) => ({
+  cardStyle: {
+    transform: [
+      {
+        translateX: current.progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [layouts.screen.width, 0],
+        }),
+      },
+    ],
+  },
+});
+```
+
+Different flows use different transitions: onboarding uses `Fade`, settings uses `Right`, modals use `Bottom`, and the gold feature entry uses `Zoom`.
+
+---
+
+## The Card Experience
+
+The virtual card is one of the most interaction-rich components in the app.
+
+### Slide-to-Reveal Card Details
+
+The card number, CVV, and expiry are hidden by default. Users slide the card to reveal details with a spring-physics animation:
+
+```typescript
+const fadeIn = useRef(new Animated.Value(GENERAL_PADDING / 8)).current;
+
+const SlideOutAnimation = () => {
+  Animated.spring(fadeIn, {
+    toValue: width * 0.13 + GENERAL_PADDING - width,
+    useNativeDriver: true,
+  }).start();
+};
+
+const SlideIn = () => {
+  Animated.spring(fadeIn, {
+    toValue: GENERAL_PADDING / 8,
+    useNativeDriver: true,
+  }).start();
+};
+```
+
+Card details are fetched encrypted, parsed using **Cheerio** (an HTML parser), and displayed only while the card is revealed.
+
+### Card Stories
+
+We built an Instagram-like stories feature for card issuance. It includes auto-advancing progress bars with `Animated.timing`, swipe gesture navigation using `react-native-swipe-gestures`, fade transitions between story items, full-screen Rive vector animations, and carousel-based navigation with `Animated.event` scroll tracking.
+
+---
+
+## Gold Investing Feature
+
+The gold module lets teenagers invest in digital gold. It includes a live gold price graph with real-time data, a pulsing green dot on the current price, and a financial planning calculator:
+
+```
+FV = P(1 + r)^t
+
+Where:
+  P = Investment amount
+  r = Expected annual return
+  t = Time horizon (1/2/3 years)
+```
+
+Interactive year selector with pre-calculated returns (11%/20%/32%) and popup explanations using spring-animated `FadeInDown` transitions.
+
+---
+
+## Gamification: Streaks, Sweeps, and Jackpots
+
+### Streak Challenges
+
+A gamification system that rewards consistent app usage. Animated notifications with Rive confetti play when tasks are completed:
+
+```typescript
+<Rive resourceName="confetti" fit={Fit.Cover} />
+```
+
+### Lucky Sweeps & Jackpots
+
+A slot-machine game with multiple Lottie animations for spinning reels, popup modals for wins, slider components for bet selection, and loading animations during result computation.
+
+### Learn & Earn
+
+Quiz-style educational content with gameplay mechanics, teaching teenagers financial literacy while rewarding them with in-app currency.
+
+---
+
+## Architecture Decisions
+
+### Image Loading Strategy
+
+We built a `FastImagePreloadWrapper` that shows a placeholder with opacity animation while the network image loads:
+
+```typescript
+const AnimatedFastImage = Animated.createAnimatedComponent(FastImage);
+
+<AnimatedFastImage
+  style={[style, { opacity: Image }]}
+  source={source}
+  onLoad={() => {
+    animateImage(Image, 1);
+    animateImage(defaultImage, 0);
+  }}
+/>;
+```
+
+### Error Boundaries
+
+A custom `FallbackComponent` catches crashes gracefully — showing an animated gradient background (Skia), an error message, and a "Try again" button instead of a white screen:
+
+```typescript
+import ErrorBoundary from "react-native-error-boundary";
+
+<ErrorBoundary FallbackComponent={FallbackComponent}>
+  <App />
+</ErrorBoundary>;
+```
+
+### App Lifecycle Management
+
+The app handles several lifecycle scenarios:
+
+- **Force Update Modal** — when the native binary is too old
+- **Maintenance Modal** — server-side maintenance windows
+- **Shutdown Modal** — graceful service discontinuation
+- **Network Error Screen** — offline handling
+- **App Inactivity Timeout** — re-authentication after 10 minutes background
+- **Deep Link Queuing** — deep links that arrive during PIN verification are queued and processed after auth
+
+### Custom Hooks Architecture
+
+We built a suite of custom hooks that encapsulate complex business logic:
+
+| Hook                   | Purpose                                                         |
+| ---------------------- | --------------------------------------------------------------- |
+| `useFlowControlLQ`    | Determines the entire app navigation flow based on user state   |
+| `useAutoFetchBalance`  | Auto-polling for balance with exponential backoff (max 5 retries) |
+| `useRemoteConfig`      | Firebase remote config with local caching                       |
+| `useContactPermission` | Contact access for referral features                            |
+| `usePhysicalCardNudge` | Smart nudge logic for physical card ordering                    |
+| `useFreeRaspUILayer`   | Runtime security monitoring                                     |
+
+---
+
+## Lessons Learned
+
+### 1. Security is a spectrum, not a checkbox
+
+No single security measure is sufficient. JailMonkey catches jailbroken devices, but FreeRASP catches Frida hooking. SSL pinning protects the transport, but ECDH protects the payload. Each layer catches what the others miss.
+
+### 2. Native modules are worth the ceremony
+
+The Objective-C bridge file for Swift modules is annoying boilerplate. The BouncyCastle/SpongyCastle classloader conflict took days to debug. But having encryption run in native code means keys never touch the JavaScript bridge unnecessarily — a meaningful security improvement for a fintech app.
+
+### 3. CodePush is a superpower with responsibility
+
+Being able to ship fixes in minutes instead of days is transformative. But every CodePush release needs source maps uploaded to Sentry, and you need to track which CodePush version maps to which native binary version. We encode this in our Sentry release string: `com.streakcard@19.2.9+codepush@v69`.
+
+### 4. Animation libraries are not interchangeable
+
+- **Reanimated** for gesture-driven, physics-based, and layout animations
+- **Lottie** for complex vector animations designed in After Effects
+- **Rive** for interactive, state-machine-driven animations
+- **Skia** for GPU-accelerated custom drawing (squircles, gradients)
+- **React Native Animated** for simple, view-level transitions
+
+Using the right tool for each case keeps performance predictable.
+
+### 5. Squircles matter more than you think
+
+Replacing `borderRadius` with proper Skia-drawn squircles made the entire app feel more polished. The difference is subtle — a standard rounded rectangle has discontinuous curvature at the tangent points, while a squircle has continuous curvature. Users notice, even if they can't articulate why.
+
+### 6. Plan for the unhappy paths
+
+Force update modals, maintenance screens, rooted device warnings, network error states, expired session handling, deep link queuing during PIN verification — the "sad paths" took as much engineering time as the happy paths. In fintech, graceful degradation isn't optional.
+
+---
+
+## The Numbers
+
+| Metric                         | Count                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| Custom native modules          | 4 (CryptoReactNative, ECDHJavaAlgorithm, CryptoReactNativeIOS, InsecureNetworkCheck)       |
+| Security layers                | 7 (JailMonkey, FreeRASP, SSL Pinning, Biometrics, Encrypted Storage, RSA, ProGuard+Hermes) |
+| FreeRASP threat checks         | 11 (9 common + 2 iOS-only)                                                                 |
+| Animation libraries            | 5 (Reanimated, Lottie, Rive, Skia, RN Animated)                                           |
+| Files using Reanimated         | 35+                                                                                        |
+| Lottie animation files         | 15+                                                                                        |
+| Custom navigation transitions  | 5 (Fade, Zoom, Right, Left, Bottom)                                                        |
+| Shared element transition tags | 7+                                                                                         |
+| Custom hooks                   | 10+                                                                                        |
+| CodePush releases (Android)    | 69                                                                                         |
+| CodePush releases (iOS)        | 46                                                                                         |
+
+---
+
+## Final Thoughts
+
+Building StreakCard taught us that React Native is absolutely capable of powering a production fintech app — but you have to be willing to go beyond the JavaScript layer. The native modules, the SSL pinning configuration, the ProGuard rules, the Keychain clearing in `AppDelegate.mm` — these aren't glamorous, but they're what separates a prototype from a product that handles real money for real users.
+
+The app ships with Hermes bytecode, ProGuard obfuscation, certificate pinning, ECDH encryption, biometric auth, runtime threat detection, and instant OTA updates. And thanks to Reanimated, Lottie, Rive, and Skia, it does all of this while feeling smooth and alive.
+
+It's React Native. It's native. It's both.
+
+---
+
+_Built with React Native. Secured with native code. Animated with care._

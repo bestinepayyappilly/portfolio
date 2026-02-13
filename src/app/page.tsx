@@ -49,7 +49,7 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section id="about">
+      <section id="about" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-4">
           <TextAnimate
             as="h2"
@@ -67,7 +67,7 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      <section id="work">
+      <section id="work" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-6">
           <TextAnimate
             as="h2"
@@ -83,7 +83,7 @@ export default function Page() {
           </BlurFade>
         </div>
       </section>
-      <section id="education">
+      <section id="education" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-6">
           <TextAnimate
             as="h2"
@@ -140,7 +140,7 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section id="skills">
+      <section id="skills" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-4">
           <TextAnimate
             as="h2"
@@ -182,7 +182,7 @@ export default function Page() {
           </BlurFade>
         </section>
       )}
-      <section id="contact">
+      <section id="contact" className="max-w-4xl mx-auto w-full">
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
           <ContactSection />
         </BlurFade>

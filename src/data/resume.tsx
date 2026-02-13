@@ -79,7 +79,7 @@ export const DATA = {
     },
     {
       company: "Streak",
-      href: "https://streak.money",
+      href: "https://streakcard.com/",
       badges: [],
       location: "Remote",
       title: "Senior Mobile Developer",
@@ -115,6 +115,39 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "StreakCard",
+      href: "https://streakcard.com/",
+      dates: "2022 - 2024",
+      active: false,
+      description:
+        "A React Native fintech app for teenagers — prepaid card, savings, gold investing, and gamification. Built with 7-layer security (FreeRASP, SSL pinning, ECDH encryption via custom native modules), 5 animation systems (Reanimated, Lottie, Rive, Skia), and instant OTA updates via CodePush.",
+      technologies: [
+        "React Native",
+        "TypeScript",
+        "Redux",
+        "Reanimated",
+        "Skia",
+        "Lottie",
+        "Rive",
+        "Sentry",
+        "CodePush",
+        "Firebase",
+      ],
+      links: [],
+      image: "/StreakLogo.webp",
+      video: "/StreakVideo.mp4",
+      blogs: [
+        {
+          title: "Building StreakCard",
+          slug: "building-streakcard-react-native-fintech",
+        },
+        {
+          title: "Custom Native Modules",
+          slug: "building-native-modules-react-native-fintech",
+        },
+      ],
+    },
+    {
       title: "ThirdMeal",
       href: "#",
       dates: "2025",
@@ -134,6 +167,9 @@ export const DATA = {
       links: [],
       image: "",
       video: "/Thirdmeal.mp4",
+      blogs: [
+        { title: "Building ThirdMeal", slug: "building-thirdmeal-ecommerce" },
+      ],
     },
     {
       title: "Wotter",
@@ -165,6 +201,9 @@ export const DATA = {
       ],
       image: "/Wotter.png",
       video: "",
+      blogs: [
+        { title: "Building Wotter", slug: "building-wotter-react-native" },
+      ],
     },
     {
       title: "NFO Checkout",
@@ -188,6 +227,7 @@ export const DATA = {
       links: [],
       image: "",
       video: "/NFOCheckout.mp4",
+      blogs: [{ title: "Checkout Monorepo", slug: "nfo-checkout-monorepo" }],
     },
     {
       title: "NFO Student Hub",
@@ -214,6 +254,13 @@ export const DATA = {
       ],
       image: "/NFOImage.png",
       video: "/NFOPortal.mp4",
+      blogs: [
+        {
+          title: "React to Next.js Migration",
+          slug: "nfo-student-hub-migration",
+        },
+        { title: "Building NFO Portal", slug: "building-nfo-portal" },
+      ],
     },
   ],
   hackathons: [] as Array<{

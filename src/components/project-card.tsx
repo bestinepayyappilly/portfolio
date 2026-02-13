@@ -3,7 +3,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, NotebookPen } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -39,6 +39,10 @@ interface Props {
     type: string;
     href: string;
   }[];
+  blogs?: readonly {
+    title: string;
+    slug: string;
+  }[];
   className?: string;
 }
 
@@ -52,6 +56,7 @@ export function ProjectCard({
   image,
   video,
   links,
+  blogs,
   className,
 }: Props) {
   return (
@@ -124,6 +129,21 @@ export function ProjectCard({
         <div className="text-xs flex-1 prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
           <Markdown>{description}</Markdown>
         </div>
+        {blogs && blogs.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            {blogs.map((blog) => (
+              <Link
+                key={blog.slug}
+                href={`/blog/${blog.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group/blog"
+              >
+                <NotebookPen className="size-3 shrink-0" />
+                <span className="group-hover/blog:underline underline-offset-2">{blog.title}</span>
+              </Link>
+            ))}
+          </div>
+        )}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-auto">
             {tags.map((tag) => (
