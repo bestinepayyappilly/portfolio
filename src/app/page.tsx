@@ -12,6 +12,7 @@ import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
 import { TextAnimate } from "@/components/ui/text-animate";
+import { AnimatedUnderline } from "@/components/ui/animated-underline";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -88,17 +89,11 @@ export default function Page() {
             >
               About
             </TextAnimate>
-            <BlurFade
-              delay={BLUR_FADE_DELAY * 3}
+            <AnimatedUnderline
+              variant="about"
               className="absolute -bottom-1 left-0 w-full"
-            >
-              <img
-                src="/AboutUnderline.svg"
-                alt=""
-                className="w-full"
-                aria-hidden="true"
-              />
-            </BlurFade>
+              delay={BLUR_FADE_DELAY * 3}
+            />
           </div>
           <BlurFade delay={BLUR_FADE_DELAY * 4}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
@@ -120,17 +115,11 @@ export default function Page() {
             >
               Work Experience
             </TextAnimate>
-            <BlurFade
-              delay={BLUR_FADE_DELAY * 5}
+            <AnimatedUnderline
+              variant="workExperience"
               className="absolute -bottom-2 left-0 w-full"
-            >
-              <img
-                src="/WorkExperienceUnderline.svg"
-                alt=""
-                className="w-full"
-                aria-hidden="true"
-              />
-            </BlurFade>
+              delay={BLUR_FADE_DELAY * 5}
+            />
           </div>
           <BlurFade delay={BLUR_FADE_DELAY * 6}>
             <WorkSection />
@@ -208,17 +197,11 @@ export default function Page() {
             >
               Skills
             </TextAnimate>
-            <BlurFade
-              delay={BLUR_FADE_DELAY * 9}
+            <AnimatedUnderline
+              variant="skills"
               className="absolute -bottom-1 left-0 w-full"
-            >
-              <img
-                src="/SkillsUnderline.svg"
-                alt=""
-                className="w-full"
-                aria-hidden="true"
-              />
-            </BlurFade>
+              delay={BLUR_FADE_DELAY * 9}
+            />
           </div>
           <div className="flex flex-wrap gap-2">
             {DATA.skills.map((skill, id) => (
