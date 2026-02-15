@@ -117,7 +117,7 @@ export default function Page() {
             </TextAnimate>
             <AnimatedUnderline
               variant="workExperience"
-              className="absolute -bottom-2 left-0 w-full"
+              className="absolute -bottom-1 left-0 w-full"
               delay={BLUR_FADE_DELAY * 5}
             />
           </div>
