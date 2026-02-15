@@ -128,16 +128,23 @@ export default function Page() {
       </section>
       <section id="education" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <TextAnimate
-            as="h2"
-            className="text-xl font-bold"
-            animation="blurInUp"
-            by="word"
-            once
-            delay={BLUR_FADE_DELAY * 7}
-          >
-            Education
-          </TextAnimate>
+          <div className="relative w-fit">
+            <TextAnimate
+              as="h2"
+              className="text-xl font-bold"
+              animation="blurInUp"
+              by="word"
+              once
+              delay={BLUR_FADE_DELAY * 7}
+            >
+              Education
+            </TextAnimate>
+            <AnimatedUnderline
+              variant="education"
+              className="absolute -bottom-1 left-0 w-full"
+              delay={BLUR_FADE_DELAY * 7}
+            />
+          </div>
           <div className="flex flex-col gap-8">
             {DATA.education.map((education, index) => (
               <BlurFade
@@ -199,7 +206,7 @@ export default function Page() {
             </TextAnimate>
             <AnimatedUnderline
               variant="skills"
-              className="absolute -bottom-1 left-0 w-full"
+              className="absolute -bottom-0 left-0 w-full"
               delay={BLUR_FADE_DELAY * 9}
             />
           </div>
