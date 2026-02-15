@@ -40,26 +40,66 @@ export default function Page() {
                 text={DATA.description}
               />
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
-              <Avatar className="size-24 md:size-32 border rounded-full shadow-lg ring-4 ring-muted">
-                <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
-                <AvatarFallback>{DATA.initials}</AvatarFallback>
-              </Avatar>
+            <BlurFade
+              delay={BLUR_FADE_DELAY}
+              className="order-1 md:order-2 overflow-visible"
+            >
+              <div className="relative overflow-visible">
+                <Avatar className="size-24 md:size-32 border rounded-full shadow-lg ring-4 ring-muted">
+                  <AvatarImage alt={DATA.name} src={DATA.avatarUrl} />
+                  <AvatarFallback>{DATA.initials}</AvatarFallback>
+                </Avatar>
+
+                {/* <div className="absolute -bottom-28 -right-12 md:-bottom-32 md:-right-16 pointer-events-none flex flex-col items-center">
+                  <img
+                    src="/AvatarLasso.png"
+                    alt=""
+                    className="mt-5 w-[500px] h-[500px] md:w-[201px] md:h-[150px] pointer-events-none"
+                    aria-hidden="true"
+                  />
+                  <img
+                    src="/Arrow.svg"
+                    alt=""
+                    className="w-16 md:w-20 -rotate-12"
+                    aria-hidden="true"
+                  />
+                  <img
+                    src="/ThatsMeIllustration.svg"
+                    alt=""
+                    className="w-20 md:w-24 -mt-2"
+                    aria-hidden="true"
+                  />
+                </div> */}
+              </div>
             </BlurFade>
           </div>
         </div>
       </section>
       <section id="about" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <TextAnimate
-            as="h2"
-            className="text-xl font-bold"
-            animation="blurInUp"
-            by="word"
-            delay={BLUR_FADE_DELAY * 3}
-          >
-            About
-          </TextAnimate>
+          <div className="relative w-fit">
+            <TextAnimate
+              as="h2"
+              className="text-xl font-bold"
+              animation="blurInUp"
+              by="word"
+              once
+              delay={BLUR_FADE_DELAY * 3}
+            >
+              About
+            </TextAnimate>
+            <BlurFade
+              delay={BLUR_FADE_DELAY * 3}
+              className="absolute -bottom-1 left-0 w-full"
+            >
+              <img
+                src="/AboutUnderline.svg"
+                alt=""
+                className="w-full"
+                aria-hidden="true"
+              />
+            </BlurFade>
+          </div>
           <BlurFade delay={BLUR_FADE_DELAY * 4}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
               <Markdown>{DATA.summary}</Markdown>
@@ -69,15 +109,29 @@ export default function Page() {
       </section>
       <section id="work" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <TextAnimate
-            as="h2"
-            className="text-xl font-bold"
-            animation="blurInUp"
-            by="word"
-            delay={BLUR_FADE_DELAY * 5}
-          >
-            Work Experience
-          </TextAnimate>
+          <div className="relative w-fit">
+            <TextAnimate
+              as="h2"
+              className="text-xl font-bold"
+              animation="blurInUp"
+              by="word"
+              once
+              delay={BLUR_FADE_DELAY * 5}
+            >
+              Work Experience
+            </TextAnimate>
+            <BlurFade
+              delay={BLUR_FADE_DELAY * 5}
+              className="absolute -bottom-2 left-0 w-full"
+            >
+              <img
+                src="/WorkExperienceUnderline.svg"
+                alt=""
+                className="w-full"
+                aria-hidden="true"
+              />
+            </BlurFade>
+          </div>
           <BlurFade delay={BLUR_FADE_DELAY * 6}>
             <WorkSection />
           </BlurFade>
@@ -90,6 +144,7 @@ export default function Page() {
             className="text-xl font-bold"
             animation="blurInUp"
             by="word"
+            once
             delay={BLUR_FADE_DELAY * 7}
           >
             Education
@@ -142,15 +197,29 @@ export default function Page() {
       </section>
       <section id="skills" className="max-w-4xl mx-auto w-full">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <TextAnimate
-            as="h2"
-            className="text-xl font-bold"
-            animation="blurInUp"
-            by="word"
-            delay={BLUR_FADE_DELAY * 9}
-          >
-            Skills
-          </TextAnimate>
+          <div className="relative w-fit">
+            <TextAnimate
+              as="h2"
+              className="text-xl font-bold"
+              animation="blurInUp"
+              by="word"
+              once
+              delay={BLUR_FADE_DELAY * 9}
+            >
+              Skills
+            </TextAnimate>
+            <BlurFade
+              delay={BLUR_FADE_DELAY * 9}
+              className="absolute -bottom-1 left-0 w-full"
+            >
+              <img
+                src="/SkillsUnderline.svg"
+                alt=""
+                className="w-full"
+                aria-hidden="true"
+              />
+            </BlurFade>
+          </div>
           <div className="flex flex-wrap gap-2">
             {DATA.skills.map((skill, id) => (
               <BlurFade
