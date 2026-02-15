@@ -1,6 +1,6 @@
 import React from "react";
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { FileTextIcon, HomeIcon, NotebookIcon } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
 import { Typescript } from "@/components/ui/svgs/typescript";
@@ -32,6 +32,7 @@ export const DATA = {
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
+    { href: "/resume", icon: FileTextIcon, label: "Resume" },
   ],
   contact: {
     email: "bestine1234@gmail.com",
@@ -69,7 +70,7 @@ export const DATA = {
       company: "National Finance Olympiad",
       badges: [],
       href: "https://nfo.edu",
-      location: "Remote",
+      location: "Bangalore, Karnataka",
       title: "Senior Full Stack Developer",
       logoUrl: "/NFOLogo.svg",
       start: "2022",
@@ -81,7 +82,7 @@ export const DATA = {
       company: "Streak",
       href: "https://streakcard.com/",
       badges: [],
-      location: "Remote",
+      location: "Bangalore, Karnataka",
       title: "Senior Mobile Developer",
       logoUrl: "/StreakLogo.webp",
       start: "End of 2021",
