@@ -16,13 +16,15 @@ async function loadAvatarAsDataUri(): Promise<string | undefined> {
       img.src = url;
     });
     const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+    // Scale down to 104x104 (2x of 52pt display size) for small file size
+    const size = 104;
+    canvas.width = size;
+    canvas.height = size;
     const ctx = canvas.getContext("2d");
     if (!ctx) return undefined;
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(img, 0, 0, size, size);
     URL.revokeObjectURL(url);
-    return canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/jpeg", 0.8);
   } catch {
     return undefined;
   }
