@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { PullToReveal } from "@/components/ui/pull-to-reveal";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -74,30 +75,33 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased relative",
+          "min-h-screen font-sans antialiased relative",
           geist.variable,
           geistMono.variable,
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <TooltipProvider delayDuration={0}>
-            <div className="absolute inset-0 top-0 left-0 right-0 h-[400px] overflow-hidden z-0">
-              <FlickeringGrid
-                className="h-full w-full"
-                squareSize={5}
-                gridGap={5}
-                style={{
-                  maskImage: "linear-gradient(to bottom, black, transparent)",
-                  WebkitMaskImage:
-                    "linear-gradient(to bottom, black, transparent)",
-                }}
-              />
-            </div>
-            <div className="relative z-10 max-w-300 mx-auto py-12 pb-24 sm:py-24 px-6">
-              {children}
-            </div>
-            <Navbar />
-          </TooltipProvider>
+          <PullToReveal />
+          <div className="relative bg-background min-h-screen">
+            <TooltipProvider delayDuration={0}>
+              <div className="absolute inset-0 top-0 left-0 right-0 h-[400px] overflow-hidden z-0">
+                <FlickeringGrid
+                  className="h-full w-full"
+                  squareSize={5}
+                  gridGap={5}
+                  style={{
+                    maskImage: "linear-gradient(to bottom, black, transparent)",
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black, transparent)",
+                  }}
+                />
+              </div>
+              <div className="relative z-10 max-w-300 mx-auto py-12 pb-24 sm:py-24 px-6">
+                {children}
+              </div>
+              <Navbar />
+            </TooltipProvider>
+          </div>
         </ThemeProvider>
       </body>
     </html>
