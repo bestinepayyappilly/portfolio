@@ -42,7 +42,7 @@ export function PullToReveal() {
     <div className="fixed inset-0 -z-10 flex items-start justify-center pt-8 bg-muted dark:bg-neutral-900">
       <motion.p
         key={text}
-        className="text-lg font-medium text-muted-foreground select-none"
+        className="text-sm sm:text-base md:text-lg font-medium text-muted-foreground select-none text-center px-4"
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{
