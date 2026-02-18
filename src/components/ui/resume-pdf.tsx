@@ -364,7 +364,7 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
             </View>
             <Bullet>
               Progressed from intern to sole mobile architect for a funded
-              fintech app on iOS and Android with 50,000+ downloads
+              fintech app on iOS and Android with 500,000+ downloads
             </Bullet>
             <Bullet>
               Engineered 7-layer security stack (ECDH key exchange, SSL pinning,
