@@ -68,8 +68,8 @@ export const DATA = {
   work: [
     {
       company: "National Finance Olympiad",
-      badges: [],
-      href: "https://nfo.edu",
+      badges: ["YC W22"],
+      href: "https://nationalfinanceolympiad.com/",
       location: "Bangalore, Karnataka",
       title: "Senior Full Stack Developer",
       logoUrl: "/NFOLogo.svg",
@@ -81,7 +81,7 @@ export const DATA = {
     {
       company: "Streak",
       href: "https://streakcard.com/",
-      badges: [],
+      badges: ["YC W22"],
       location: "Bangalore, Karnataka",
       title: "Senior Mobile Developer",
       logoUrl: "/StreakLogo.webp",
