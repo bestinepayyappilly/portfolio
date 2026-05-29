@@ -219,6 +219,35 @@ export default function ResumePage() {
         {/* Projects */}
         <h2>Key Projects</h2>
 
+        <h3>
+          <a
+            href="https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-foreground transition-colors"
+          >
+            Baki
+          </a>
+        </h3>
+        <p className="text-sm! mt-0!">
+          React Native &middot; TypeScript &middot; Supabase &middot; RevenueCat
+          &middot; Reanimated 4 &middot; Zustand &middot; MMKV &middot; Skia
+        </p>
+        <ul>
+          <li>
+            Commitment-first budgeting iOS app — shows real available balance
+            (salary minus locked commitments minus spending) before you spend
+          </li>
+          <li>
+            Bare RN 0.84, New Architecture, shared element transitions, animated
+            mesh gradients, and Skia-powered spectral wave animations
+          </li>
+          <li>
+            Full split-expense system (5 split modes), AI trip planning via
+            Supabase Edge Function (GPT-4o), and RevenueCat Pro subscription tier
+          </li>
+        </ul>
+
         <h3>StreakCard</h3>
         <p className="text-sm! mt-0!">
           React Native &middot; TypeScript &middot; Redux &middot; Reanimated

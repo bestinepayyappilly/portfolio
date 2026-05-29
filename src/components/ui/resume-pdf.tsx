@@ -264,6 +264,17 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
             <SectionTitle>Key Projects</SectionTitle>
 
             <View style={s.projectRow}>
+              <Text style={s.projectName}>Baki</Text>
+              <Text style={s.projectTech}>
+                React Native, TS, Supabase, RevenueCat, Reanimated 4, Skia
+              </Text>
+              <Text style={s.projectDesc}>
+                Commitment-first budgeting iOS app — real available balance,
+                split expenses (5 modes), AI trip planning, RevenueCat Pro tier
+              </Text>
+            </View>
+
+            <View style={s.projectRow}>
               <Text style={s.projectName}>StreakCard</Text>
               <Text style={s.projectTech}>React Native, TS, Redux, Skia</Text>
               <Text style={s.projectDesc}>
