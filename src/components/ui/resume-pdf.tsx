@@ -26,10 +26,10 @@ const s = StyleSheet.create({
     fontSize: 9,
     color: c.dark,
     backgroundColor: c.white,
-    paddingTop: 28,
-    paddingBottom: 24,
-    paddingHorizontal: 32,
-    lineHeight: 1.4,
+    paddingTop: 20,
+    paddingBottom: 18,
+    paddingHorizontal: 28,
+    lineHeight: 1.3,
   },
   // Header
   headerRow: {
@@ -50,7 +50,7 @@ const s = StyleSheet.create({
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 10.5,
+    fontSize: 10,
     color: c.muted,
     marginTop: 15,
   },
@@ -67,8 +67,8 @@ const s = StyleSheet.create({
   hr: {
     borderBottomWidth: 0.5,
     borderBottomColor: c.border,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 7,
+    marginBottom: 7,
   },
   columns: {
     flexDirection: "row",
@@ -79,46 +79,46 @@ const s = StyleSheet.create({
   rightCol: { flex: 1 },
   // Sections
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: 700,
     color: c.black,
-    marginBottom: 6,
+    marginBottom: 4,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     borderBottomWidth: 1,
     borderBottomColor: c.accent,
-    paddingBottom: 3,
+    paddingBottom: 2,
   },
   // Skills
-  skillGroup: { marginBottom: 6 },
+  skillGroup: { marginBottom: 4 },
   skillLabel: {
-    fontSize: 9,
+    fontSize: 8.5,
     fontWeight: 700,
     color: c.black,
     marginBottom: 1,
   },
-  skillText: { fontSize: 8.5, color: c.body, lineHeight: 1.45 },
+  skillText: { fontSize: 8, color: c.body, lineHeight: 1.35 },
   // Jobs
   jobHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginTop: 7,
+    marginTop: 5,
     marginBottom: 1,
   },
-  jobTitle: { fontSize: 10, fontWeight: 700, color: c.black },
+  jobTitle: { fontSize: 9.5, fontWeight: 700, color: c.black },
   jobCompanyRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginBottom: 2,
+    marginBottom: 1,
   },
-  jobCompany: { fontSize: 9, color: c.muted, fontStyle: "italic" },
-  jobDate: { fontSize: 8.5, color: c.light },
+  jobCompany: { fontSize: 8.5, color: c.muted, fontStyle: "italic" },
+  jobDate: { fontSize: 8, color: c.light },
   // Bullets
-  bullet: { flexDirection: "row", marginBottom: 2, paddingLeft: 2 },
-  bulletDot: { width: 8, fontSize: 9, color: c.light },
-  bulletText: { flex: 1, fontSize: 9, color: c.body, lineHeight: 1.45 },
+  bullet: { flexDirection: "row", marginBottom: 1.5, paddingLeft: 2 },
+  bulletDot: { width: 8, fontSize: 8.5, color: c.light },
+  bulletText: { flex: 1, fontSize: 8.5, color: c.body, lineHeight: 1.35 },
   // Projects
   projectRow: { marginBottom: 4 },
   projectName: { fontSize: 9, fontWeight: 700, color: c.black },
@@ -205,21 +205,29 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
             <View style={s.skillGroup}>
               <Text style={s.skillLabel}>Mobile</Text>
               <Text style={s.skillText}>
-                React Native, iOS (Swift), Android (Kotlin/Java), Reanimated,
-                Skia, Lottie, Rive, CodePush
+                React Native, React Hooks, Redux/Redux Toolkit, Context API,
+                iOS (Xcode, provisioning, certificates), Android (Kotlin/Java,
+                Gradle), Reanimated, Skia, Lottie, Rive, CodePush
+              </Text>
+            </View>
+            <View style={s.skillGroup}>
+              <Text style={s.skillLabel}>Integrations</Text>
+              <Text style={s.skillText}>
+                REST APIs, GraphQL, JSON, Native modules & bridging, Push
+                notifications, Deep linking, Analytics (GA4, Firebase)
+              </Text>
+            </View>
+            <View style={s.skillGroup}>
+              <Text style={s.skillLabel}>Offline & Storage</Text>
+              <Text style={s.skillText}>
+                MMKV, SQLite, Realm, Supabase, PostgreSQL, Firebase
               </Text>
             </View>
             <View style={s.skillGroup}>
               <Text style={s.skillLabel}>Frontend</Text>
               <Text style={s.skillText}>
-                React, Next.js, TypeScript, JavaScript, TailwindCSS,
-                Material-UI, Framer Motion, Vite
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Backend & Data</Text>
-              <Text style={s.skillText}>
-                Node.js, Supabase, PostgreSQL, Firebase, REST APIs
+                React, Next.js, TypeScript, JavaScript (ES6+), TailwindCSS,
+                Framer Motion, Vite
               </Text>
             </View>
             <View style={s.skillGroup}>
@@ -237,14 +245,14 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               </Text>
             </View>
             <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>DevOps & Tools</Text>
+              <Text style={s.skillLabel}>DevOps & CI/CD</Text>
               <Text style={s.skillText}>
-                Turborepo, Sentry, GA4, Firebase Remote Config, Docker, Vercel,
-                Git, Jest, ESLint
+                Fastlane, GitHub Actions, App Center, Bitrise, Turborepo,
+                Sentry, Docker, Vercel, Git, Jest, ESLint
               </Text>
             </View>
 
-            <View style={{ marginTop: 14 }} />
+            <View style={{ marginTop: 8 }} />
             <SectionTitle>Education</SectionTitle>
             <Text style={s.eduTitle}>SRM University</Text>
             <Text style={s.eduMeta}>2018 - 2022</Text>
@@ -252,7 +260,7 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               B.Tech in Electronics {"\n"}& Communication Engineering
             </Text>
 
-            <View style={{ marginTop: 14 }} />
+            <View style={{ marginTop: 8 }} />
             <SectionTitle>Key Projects</SectionTitle>
 
             <View style={s.projectRow}>
@@ -305,17 +313,10 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
           <View style={s.rightCol}>
             <SectionTitle>Summary</SectionTitle>
             <Text style={s.summaryText}>
-              Full-stack developer with 4+ years of experience building and
-              shipping production applications across mobile and web. Sole
-              mobile architect for a funded fintech startup handling sensitive
-              payment flows and cryptographic operations. Built and owned entire
-              product ecosystems — from React Native apps to Next.js portals to
-              monorepo checkout systems. Integrated payment gateways including
-              Razorpay, Cashfree, BillDesk, and Stripe across multiple products
-              serving thousands of users.
+              Senior React Native engineer with 4+ years shipping production apps across mobile and web. Sole mobile architect for a YC-backed fintech startup — owned iOS/Android development, payment flows, app security, and full app lifecycle. Built entire product ecosystems from React Native to Next.js portals. Mentored developers and drove coding standards.
             </Text>
 
-            <View style={{ marginTop: 10 }} />
+            <View style={{ marginTop: 6 }} />
             <SectionTitle>Work Experience</SectionTitle>
 
             {/* NFO */}
@@ -323,7 +324,32 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               <Text style={s.jobTitle}>Senior Full Stack Developer</Text>
             </View>
             <View style={s.jobCompanyRow}>
-              <Text style={s.jobCompany}>National Finance Olympiad</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
+                <Link
+                  src="https://nationalfinanceolympiad.com/"
+                  style={[
+                    s.jobCompany,
+                    { color: c.accent, textDecoration: "none" },
+                  ]}
+                >
+                  National Finance Olympiad
+                </Link>
+                <Text
+                  style={{
+                    fontSize: 6,
+                    color: c.white,
+                    backgroundColor: c.accent,
+                    paddingHorizontal: 3,
+                    paddingVertical: 1,
+                    borderRadius: 2,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  YC W22
+                </Text>
+              </View>
               <Text style={s.jobDate}>
                 2022 - Present | Bangalore, Karnataka
               </Text>
@@ -343,13 +369,7 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               user retention
             </Bullet>
             <Bullet>
-              Architected Turborepo monorepo housing 3 checkout apps with A/B
-              testing framework and 1,200+ GA4-tracked conversion events
-            </Bullet>
-            <Bullet>
-              Owned end-to-end stack: frontend architecture, backend
-              integration, payment flows, CI/CD pipelines, and production
-              deployment
+              Architected Turborepo monorepo with 3 checkout apps, A/B testing, and 1,200+ GA4-tracked conversion events
             </Bullet>
 
             {/* Streak */}
@@ -357,7 +377,32 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               <Text style={s.jobTitle}>Senior Mobile Developer</Text>
             </View>
             <View style={s.jobCompanyRow}>
-              <Text style={s.jobCompany}>Streak</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
+                <Link
+                  src="https://streakcard.com/"
+                  style={[
+                    s.jobCompany,
+                    { color: c.accent, textDecoration: "none" },
+                  ]}
+                >
+                  Streak
+                </Link>
+                <Text
+                  style={{
+                    fontSize: 6,
+                    color: c.white,
+                    backgroundColor: c.accent,
+                    paddingHorizontal: 3,
+                    paddingVertical: 1,
+                    borderRadius: 2,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  YC W22
+                </Text>
+              </View>
               <Text style={s.jobDate}>
                 End of 2021 - 2024 | Bangalore, Karnataka
               </Text>
@@ -372,9 +417,8 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               encrypted payment flows
             </Bullet>
             <Bullet>
-              Built and integrated 5 animation systems (Reanimated, Lottie,
-              Rive, Skia) with shared element transitions and Skia-rendered
-              squircles
+              Managed state across complex financial flows using Redux Toolkit;
+              built reusable component libraries adopted across the entire app
             </Bullet>
             <Bullet>
               Single-handedly shipped a new Fixed Deposits app end-to-end —
@@ -382,8 +426,12 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               investment flow
             </Bullet>
             <Bullet>
-              Implemented instant OTA updates via Microsoft CodePush with
-              production crash monitoring through Sentry
+              Owned full app lifecycle: App Store and Play Store publishing,
+              CodePush OTA updates, and CI/CD pipelines via Fastlane
+            </Bullet>
+            <Bullet>
+              Mentored junior developers through code reviews and established
+              mobile coding standards across the team
             </Bullet>
 
             {/* doyou.ae */}

@@ -17,6 +17,7 @@ const posts = defineCollection({
         image: z.string().optional(),
         imageContain: z.boolean().optional(),
         video: z.string().optional(),
+        screenshots: z.array(z.string()).optional(),
         content: z.string(),
     }),
     transform: async (document, context) => {

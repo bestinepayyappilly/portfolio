@@ -1,0 +1,119 @@
+---
+title: "Building Baki: A Commitment-First Budgeting App for iOS"
+publishedAt: "2025-05-29"
+updatedAt: "2025-05-29"
+author: "Bestine Payyappilly"
+summary: "How I designed and built a bare React Native budgeting app that shows your real available balance — salary minus locked commitments minus spending — before you spend."
+image: "/baki/screen-home.png"
+screenshots:
+  - "/baki/screen-home.png"
+  - "/baki/screen-add.png"
+  - "/baki/screen-insights.png"
+  - "/baki/screen-insights-detail.png"
+  - "/baki/screen-plan-trip.png"
+  - "/baki/screen-travel.png"
+---
+
+<AppStoreBadge href="https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323" websiteHref="https://baki-xi.vercel.app/" />
+
+Baki started from a personal frustration: every budgeting app I tried told me how much money I *had*, not how much I could actually *spend*. The difference matters. If you earn ₹80,000 a month but ₹45,000 is already committed to rent, EMIs, and subscriptions, your real spendable balance is ₹35,000. Baki shows you that number, prominently, before you open your wallet.
+
+## The Core Idea
+
+The hero metric in Baki is the **available balance**:
+
+```
+available = salary − locked commitments − spent this month
+```
+
+Commitments are recurring expenses you've pre-declared — rent, EMIs, subscriptions. They're "locked" — they reduce your available balance before you start the month, so daily spending never collides with bills you've already promised to pay.
+
+<ScreenshotRow images={["/baki/image1.png", "/baki/image2.png"]} alt="Baki home" />
+
+## Tech Stack
+
+| Concern | Choice |
+|---|---|
+| Framework | React Native 0.84 (bare, no Expo) |
+| Language | TypeScript (strict) |
+| State | Zustand + MMKV |
+| Navigation | React Navigation 7 (native stack) |
+| Animations | Reanimated 4 + Skia |
+| Database | Supabase (Postgres + RLS + Realtime) |
+| Auth | Supabase Auth + Google Sign-In + Apple Sign-In |
+| Payments | RevenueCat |
+| Push | Firebase Cloud Messaging |
+| Localisation | i18next (30+ languages) |
+
+Bare React Native was a deliberate choice. Full native access — custom modules, the New Architecture (Turbo Modules + Fabric), no Expo abstractions between me and the platform.
+
+## Add Expense
+
+The add expense screen uses a spectral wave animation as the background — two animated sine waves blended with colour stops. Category and payment method are selected via chip rows, no modals. Optimistic updates hit Zustand immediately; Supabase syncs in the background.
+
+<ScreenshotRow images={["/baki/image3.png", "/baki/image4.png"]} alt="Add expense" />
+
+## Split Expenses
+
+One of the deeper features is a Splitwise-style group expense system. Groups have members, expenses, and balances with five split modes:
+
+- **Equally** — divide by selected members
+- **Exact amounts** — enter per-person amounts, remainder shown
+- **Percentage** — enter per-person percentages
+- **Shares** — stepper-based ratio splitting
+- **Adjustment** — base split with signed per-person offsets
+
+Each split expense also creates a linked entry in the main expense store so it flows into your category grid and reduces your available balance.
+
+<ScreenshotRow images={["/baki/image5.png", "/baki/image6.png"]} alt="Split expenses" />
+
+## AI Trip Planning
+
+The travel mode includes an AI-powered itinerary generator. Describe a trip in natural language — "5 days in Tokyo for food and culture, ₹1.5L budget" — and the AI generates a day-by-day plan with estimated costs. Pro users can one-tap import it as a Baki trip, automatically creating destinations and seeding daily budgets from the estimates.
+
+The itinerary generation runs via a Supabase Edge Function (GPT-4o), with the user's JWT forwarded for auth. Exchange rates are cached at trip creation so historical data stays accurate as rates shift.
+
+<ScreenshotRow images={["/baki/image7.png", "/baki/image8.png"]} alt="AI trip planning" />
+
+## Shared Element Transitions
+
+The intro screen cycles through 30 languages showing "balance" in each — Arabic, Japanese, Hindi, Russian — landing on "Baki". The logo transitions via a shared element animation to the welcome screen using Reanimated 4's `sharedTransitionTag`.
+
+Reanimated 4 has `ENABLE_SHARED_ELEMENT_TRANSITIONS` as a static C++ compile-time flag, enabled via `package.json`:
+
+```json
+"reanimated": {
+  "staticFeatureFlags": {
+    "ENABLE_SHARED_ELEMENT_TRANSITIONS": true
+  }
+}
+```
+
+This required a full rebuild (pod install + clean build), but the result is a native-quality shared element transition without any third-party library.
+
+## Localisation
+
+The app ships with full i18next support across 30+ languages, with locale-aware number formatting. Indian users get the lakh/crore system (₹1,23,456), global users get standard formatting. The language detection is automatic on first launch.
+
+## What I Learned
+
+**New Architecture is ready.** RN 0.84 drops legacy architecture entirely. Every module must be Turbo Module compatible. The ecosystem has caught up — all the libraries I needed had New Architecture support, and the performance difference is real.
+
+**Zustand + MMKV is the right pairing for offline-first.** Zustand for in-memory state, MMKV as a synchronous persistence layer, Supabase for truth. No sagas, no thunks, no boilerplate.
+
+**Soft paywalls convert better.** The paywall only shows after the user has seen real value — after 100 expenses logged, or when they try to view history older than a month. Hard paywalls on first launch convert at ~1%. Soft paywalls after value is demonstrated convert significantly better.
+
+**RevenueCat is worth it.** Subscription state management, receipt validation, promotional entitlements, and a dashboard with cohort data — all without building any of that infrastructure yourself.
+
+---
+
+<video
+  src="/baki/promo.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="w-fit h-[300px] rounded-2xl my-8"
+/>
+
+<AppStoreBadge href="https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323" websiteHref="https://baki-xi.vercel.app/" />

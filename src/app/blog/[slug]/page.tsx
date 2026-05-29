@@ -7,6 +7,7 @@ import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { BlogCarousel } from "@/components/blog-carousel";
 
 function getSortedPosts() {
   return [...allPosts].sort((a, b) => {
@@ -141,7 +142,9 @@ export default async function Blog({
           {formatDate(post.publishedAt)}
         </p>
       </div>
-      {(post.video || post.image) && (
+      {post.screenshots && post.screenshots.length > 0 ? (
+        <BlogCarousel screenshots={post.screenshots} title={post.title} />
+      ) : (post.video || post.image) ? (
         <div className="my-6 rounded-2xl overflow-hidden">
           {post.video ? (
             <video
@@ -161,7 +164,7 @@ export default async function Blog({
             />
           ) : null}
         </div>
-      )}
+      ) : null}
       <div className="my-6 flex w-full items-center">
         <div
           className="flex-1 h-px bg-border"

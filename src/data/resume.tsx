@@ -15,9 +15,9 @@ export const DATA = {
   location: "Bangalore, Karnataka, India",
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description:
-    "Mobile Developer & Full Stack Engineer. I build production apps & websites handling payments and sensitive financial data.",
+    "Senior React Native Engineer. I architect, ship, and lead mobile teams — iOS & Android, payments, security, and full app lifecycle.",
   summary:
-    "Full-stack developer who ships. I build and own entire product ecosystems — from mobile apps to admin dashboards to checkout systems. Integrated payment flows across Razorpay, Cashfree, BillDesk, and Stripe. React Native and Next.js, end-to-end.",
+    "Senior React Native engineer who architects, ships, and leads. I own entire product ecosystems — from mobile apps with native iOS/Android modules to checkout systems and admin dashboards. Deep experience with payment integrations (Razorpay, Stripe, BillDesk, Cashfree), app security (ECDH, SSL pinning, FreeRASP), and the full app lifecycle from development to App Store and Play Store publishing. Mentored junior and mid-level developers through code reviews and drove coding standards across teams.",
   avatarUrl: "/me.webp",
   skills: [
     { name: "React Native", icon: ReactLight },
@@ -26,6 +26,7 @@ export const DATA = {
     { name: "TypeScript", icon: Typescript },
     { name: "JavaScript", icon: Typescript },
     { name: "Node.js", icon: Nodejs },
+    { name: "Redux Toolkit", icon: ReactLight },
     { name: "Native iOS", icon: Swift },
     { name: "Native Android", icon: Android },
   ],
@@ -88,7 +89,7 @@ export const DATA = {
       start: "End of 2021",
       end: "2024",
       description:
-        "Joined Streak, a recently funded payments app for teens, after being selected for having the best design and state management techniques among all applicants. Progressed from intern to sole mobile architect, overseeing both iOS and Android development. Architected and maintained both iOS and Android applications handling sensitive payment flows and cryptographic operations. Solved critical native code issues in both platforms. Single-handedly designed and developed a new app for Fixed Deposits (FDs), handling everything from architecture to UI/UX. Led the redesign and implementation of new features including gold investments and financial products.",
+        "Joined Streak, a recently funded payments app for teens, after being selected for having the best design and state management techniques among all applicants. Progressed from intern to sole mobile architect, overseeing both iOS and Android development. Architected and maintained both iOS and Android applications handling sensitive payment flows and cryptographic operations using Redux Toolkit for state management. Solved critical native code issues in both platforms using custom Kotlin and Swift native modules. Single-handedly designed and developed a new app for Fixed Deposits (FDs), handling everything from architecture to UI/UX. Led the redesign and implementation of new features including gold investments and financial products. Owned the full app lifecycle including App Store and Play Store publishing, CodePush OTA updates, and CI/CD pipelines. Mentored junior developers through code reviews and established coding standards across the mobile team.",
     },
     {
       company: "doyou.ae",
@@ -115,6 +116,51 @@ export const DATA = {
     },
   ],
   projects: [
+    {
+      title: "Baki",
+      href: "https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323",
+      dates: "2025",
+      active: true,
+      description:
+        "A commitment-first budgeting app for iOS. Shows your real available balance — salary minus locked commitments minus spending — before you spend. Built with bare React Native 0.84, Supabase, RevenueCat, and a full split-expense system. Features animated mesh gradients, shared element transitions, AI-powered trip planning, and a Pro tier with Weave spreadsheet sync.",
+      technologies: [
+        "React Native",
+        "TypeScript",
+        "Supabase",
+        "RevenueCat",
+        "Reanimated 4",
+        "Zustand",
+        "MMKV",
+        "Firebase",
+        "Skia",
+        "i18next",
+      ],
+      links: [
+        {
+          type: "App Store",
+          href: "https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323",
+          icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "Website",
+          href: "https://baki-xi.vercel.app/",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/baki/screen-home.png",
+      screenshots: [
+        "/baki/screen-home.png",
+        "/baki/screen-add.png",
+        "/baki/screen-insights.png",
+        "/baki/screen-insights-detail.png",
+        "/baki/screen-plan-trip.png",
+        "/baki/screen-travel.png",
+      ],
+      video: "",
+      blogs: [
+        { title: "Building Baki", slug: "building-baki-expense-tracker" },
+      ],
+    },
     {
       title: "StreakCard",
       href: "https://streakcard.com/",

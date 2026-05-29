@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, NotebookPen } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
 function ProjectImage({ src, alt }: { src: string; alt: string }) {
@@ -19,9 +19,78 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
     <img
       src={src}
       alt={alt}
-      className="w-fit  h-52 object-contain  shadow-xl rounded-2xl overflow-hidden bg-white"
+      className="w-fit h-52 object-contain shadow-xl rounded-2xl overflow-hidden bg-white"
       onError={() => setImageError(true)}
     />
+  );
+}
+
+function ScreenshotCarousel({
+  screenshots,
+  title,
+}: {
+  screenshots: string[];
+  title: string;
+}) {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const n = screenshots.length;
+
+  useEffect(() => {
+    if (paused) return;
+    intervalRef.current = setInterval(() => {
+      setActive((i) => (i + 1) % n);
+    }, 2500);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [paused, n]);
+
+  // For each screenshot, compute its position relative to active (-2, -1, 0, 1, 2)
+  function getOffset(i: number) {
+    let offset = i - active;
+    // wrap around
+    if (offset > n / 2) offset -= n;
+    if (offset < -n / 2) offset += n;
+    return offset;
+  }
+
+  return (
+    <div
+      className="relative flex items-center justify-center h-56 w-full overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {screenshots.map((src, i) => {
+        const offset = getOffset(i);
+        const abs = Math.abs(offset);
+        // Only render items within 2 positions of center
+        if (abs > 2) return null;
+
+        const scale = abs === 0 ? 1 : abs === 1 ? 0.72 : 0.52;
+        const opacity = abs === 0 ? 1 : abs === 1 ? 0.55 : 0.25;
+        const translateX = offset * 105; // px gap between items
+        const zIndex = 10 - abs;
+
+        return (
+          <img
+            key={src}
+            src={src}
+            alt={`${title} screenshot ${i + 1}`}
+            onClick={() => setActive(i)}
+            className="absolute h-48 w-auto object-contain cursor-pointer"
+            style={{
+              transform: `translateX(${translateX}px) scale(${scale})`,
+              opacity,
+              zIndex,
+              transition:
+                "transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease",
+            }}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -34,6 +103,7 @@ interface Props {
   link?: string;
   image?: string;
   video?: string;
+  screenshots?: readonly string[];
   links?: readonly {
     icon: React.ReactNode;
     type: string;
@@ -55,6 +125,7 @@ export function ProjectCard({
   link,
   image,
   video,
+  screenshots,
   links,
   blogs,
   className,
@@ -66,7 +137,7 @@ export function ProjectCard({
         className,
       )}
     >
-      <div className="relative shrink-0">
+      <div className="relative shrink-0 overflow-hidden">
         <Link
           href={href || "#"}
           target="_blank"
@@ -80,8 +151,10 @@ export function ProjectCard({
               loop
               muted
               playsInline
-              className="w-fit h-52 object-contain  shadow-xl rounded-2xl overflow-hidden bg-black"
+              className="w-fit h-52 object-contain shadow-xl rounded-2xl overflow-hidden bg-black"
             />
+          ) : screenshots && screenshots.length > 1 ? (
+            <ScreenshotCarousel screenshots={[...screenshots]} title={title} />
           ) : image ? (
             <ProjectImage src={image} alt={title} />
           ) : (
@@ -139,7 +212,9 @@ export function ProjectCard({
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group/blog"
               >
                 <NotebookPen className="size-3 shrink-0" />
-                <span className="group-hover/blog:underline underline-offset-2">{blog.title}</span>
+                <span className="group-hover/blog:underline underline-offset-2">
+                  {blog.title}
+                </span>
               </Link>
             ))}
           </div>

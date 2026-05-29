@@ -14,7 +14,7 @@ export function MediaContainer({
   className = "",
 }: MediaContainerProps) {
   return (
-    <div className={`ring-4 ring-muted w-full h-[300px] rounded-lg overflow-hidden flex items-center justify-center ${className}`}>
+    <div className={`ring-4 ring-muted w-full rounded-lg overflow-hidden flex items-center justify-center ${type === "video" ? "" : "h-[300px]"} ${className}`}>
       {type === "image" ? (
         <img
           src={src}
@@ -24,7 +24,7 @@ export function MediaContainer({
       ) : (
         <video
           src={src}
-          className="w-full h-full object-cover object-center max-w-full max-h-full"
+          className="w-full h-auto"
           controls
         />
       )}
