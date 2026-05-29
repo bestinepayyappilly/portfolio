@@ -84,7 +84,7 @@ export default function ProjectsSection() {
                 tags={project.technologies}
                 image={project.image}
                 video={project.video}
-                screenshots={"screenshots" in project ? (project.screenshots as string[]) : undefined}
+                screenshots={"screenshots" in project ? [...(project.screenshots as readonly string[])] : undefined}
                 links={project.links}
                 blogs={project.blogs}
               />
