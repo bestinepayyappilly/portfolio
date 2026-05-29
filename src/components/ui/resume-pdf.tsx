@@ -301,23 +301,6 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               </Text>
             </View>
 
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>ThirdMeal</Text>
-              <Text style={s.projectTech}>
-                React 19, Vite, Supabase, Razorpay
-              </Text>
-              <Text style={s.projectDesc}>
-                E-commerce with multi-step checkout, OTP verification
-              </Text>
-            </View>
-
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>Wotter</Text>
-              <Text style={s.projectTech}>React Native, TS, Redux Toolkit</Text>
-              <Text style={s.projectDesc}>
-                Hydration tracker on App Store with RevenueCat subscriptions
-              </Text>
-            </View>
           </View>
 
           {/* ─── RIGHT COLUMN ─── */}
@@ -426,10 +409,6 @@ export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
               Engineered 7-layer security stack (ECDH key exchange, SSL pinning,
               FreeRASP) with custom Kotlin and Swift native modules for
               encrypted payment flows
-            </Bullet>
-            <Bullet>
-              Managed state across complex financial flows using Redux Toolkit;
-              built reusable component libraries adopted across the entire app
             </Bullet>
             <Bullet>
               Single-handedly shipped a new Fixed Deposits app end-to-end —
