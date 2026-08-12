@@ -89,7 +89,28 @@ export default function WorkSection() {
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 ml-13 text-xs sm:text-sm text-muted-foreground">
-            {work.description}
+            <p>{work.description}</p>
+            {work.roles && work.roles.length > 0 && (
+              <div className="mt-4 grid gap-4 border-l pl-4">
+                {work.roles.map((role) => (
+                  <div key={role.title + role.start} className="grid gap-1.5">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+                      <span className="font-medium text-foreground">
+                        {role.title}
+                      </span>
+                      <span className="text-xs tabular-nums">
+                        {role.start} - {role.end}
+                      </span>
+                    </div>
+                    <ul className="list-disc grid gap-1 pl-4 marker:text-muted-foreground/50">
+                      {role.bullets.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
           </AccordionContent>
         </AccordionItem>
       ))}

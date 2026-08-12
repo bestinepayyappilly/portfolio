@@ -7,28 +7,72 @@ import { Typescript } from "@/components/ui/svgs/typescript";
 import { Nodejs } from "@/components/ui/svgs/nodejs";
 import { Android } from "@/components/ui/svgs/android";
 import { Swift } from "@/components/ui/svgs/swift";
+import { Python } from "@/components/ui/svgs/python";
+import { Postgresql } from "@/components/ui/svgs/postgresql";
+
+// Single source of truth for how the role is labelled — headline, page metadata,
+// and the PDF all read from this so the wording never drifts apart.
+const HEADLINE = "Senior Mobile Engineer | React Native, iOS & Android";
 
 export const DATA = {
   name: "Bestine Payyappilly",
   initials: "BP",
+  headline: HEADLINE,
   url: "https://bestinepayyappilly.com",
   location: "Bangalore, Karnataka, India",
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description:
-    "Senior React Native Engineer. I architect, ship, and lead mobile teams — iOS & Android, payments, security, and full app lifecycle.",
+    `${HEADLINE}. I build the mobile app, the web platform, and the backend behind them.`,
   summary:
-    "Senior React Native engineer who architects, ships, and leads. I own entire product ecosystems — from mobile apps with native iOS/Android modules to checkout systems and admin dashboards. Deep experience with payment integrations (Razorpay, Stripe, BillDesk, Cashfree), app security (ECDH, SSL pinning, FreeRASP), and the full app lifecycle from development to App Store and Play Store publishing. Mentored junior and mid-level developers through code reviews and drove coding standards across teams.",
+    "Senior mobile engineer with ~5 years building production apps in React Native, with native iOS and Android work in Swift and Kotlin. Sole mobile architect for a YC-backed teen fintech app with 500k+ downloads, owning architecture, on-device payment encryption, security hardening, releases, and on-call. Shipped financial products end to end and mentor engineers across the mobile and web teams. Also build the full-stack platform beside it — Next.js, Django, Postgres, payments, and production LLM pipelines.",
   avatarUrl: "/me.webp",
   skills: [
     { name: "React Native", icon: ReactLight },
     { name: "React", icon: ReactLight },
     { name: "Next.js", icon: NextjsIconDark },
     { name: "TypeScript", icon: Typescript },
-    { name: "JavaScript", icon: Typescript },
     { name: "Node.js", icon: Nodejs },
-    { name: "Redux Toolkit", icon: ReactLight },
+    { name: "Python / Django", icon: Python },
+    { name: "PostgreSQL", icon: Postgresql },
     { name: "Native iOS", icon: Swift },
     { name: "Native Android", icon: Android },
+  ],
+  // Ordered by relevance to a senior mobile role — mobile first, everything
+  // else as supporting depth rather than a flat technology checklist.
+  expertise: [
+    {
+      label: "Core Mobile",
+      items:
+        "React Native, TypeScript, Redux Toolkit, Reanimated, Skia, Lottie, MMKV",
+    },
+    {
+      label: "Native Mobile",
+      items:
+        "iOS, Android, Swift, Kotlin/Java, native modules & bridging, Xcode, Gradle",
+    },
+    {
+      label: "Architecture & Delivery",
+      items:
+        "Release engineering, CI/CD, Fastlane, GitHub Actions, CodePush OTA, Sentry",
+    },
+    {
+      label: "Product & Domain",
+      items:
+        "Payments, mobile security & encryption, analytics, A/B testing, attribution",
+    },
+    {
+      label: "Additional Engineering",
+      items:
+        "Next.js, Node.js, Django, PostgreSQL, Supabase, GraphQL, Firebase, GCP",
+    },
+    { label: "AI / LLM", items: "Claude API, RAG, pgvector, LangGraph" },
+  ],
+  // Concrete leadership outcomes — people, standards, and ownership — not
+  // a keyword list. Kept separate so the PDF and web resume stay in sync.
+  leadership: [
+    "Mentored 4 engineers across the mobile and web teams through code review, and set the standards and documentation both codebases run on.",
+    "Partnered with founders on scope and prioritisation from discovery through launch and iteration.",
+    "Owned mobile architecture, releases, and on-call as sole mobile architect — establishing patterns and review practices for a production fintech app with 500k+ downloads.",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -47,7 +91,7 @@ export const DATA = {
       },
       LinkedIn: {
         name: "LinkedIn",
-        url: "https://linkedin.com/in/bestine-payyappilly-030858113",
+        url: "https://linkedin.com/in/bestine-payyappilly",
         icon: Icons.linkedin,
         navbar: true,
       },
@@ -68,40 +112,76 @@ export const DATA = {
 
   work: [
     {
-      company: "National Finance Olympiad",
-      badges: ["YC W22"],
-      href: "https://nationalfinanceolympiad.com/",
-      location: "Bangalore, Karnataka",
-      title: "Senior Full Stack Developer",
-      logoUrl: "/NFOLogo.svg",
-      start: "2022",
-      end: "Present",
-      description:
-        "Built an entire ecosystem of web applications from the ground up after Streak pivoted to financial education for kids. Products built include: Self-learning Checkout, Books Checkout, Student Hub (full-featured student portal with React to Next.js migration), Admin Panel, and Teacher Portal. Integrated multiple payment gateways including Razorpay, Stripe (international), and BillDesk. Owned the complete development stack: frontend architecture, backend integration, payment flows, and deployment.",
-    },
-    {
       company: "Streak",
-      href: "https://streakcard.com/",
       badges: ["YC W22"],
-      location: "Bangalore, Karnataka",
+      href: "https://streakcard.com/",
+      location: "Bengaluru, Karnataka",
       title: "Senior Mobile Developer",
       logoUrl: "/StreakLogo.webp",
-      start: "End of 2021",
-      end: "2024",
+      start: "Feb 2022",
+      end: "Jan 2026",
       description:
-        "Joined Streak, a recently funded payments app for teens, after being selected for having the best design and state management techniques among all applicants. Progressed from intern to sole mobile architect, overseeing both iOS and Android development. Architected and maintained both iOS and Android applications handling sensitive payment flows and cryptographic operations using Redux Toolkit for state management. Solved critical native code issues in both platforms using custom Kotlin and Swift native modules. Single-handedly designed and developed a new app for Fixed Deposits (FDs), handling everything from architecture to UI/UX. Led the redesign and implementation of new features including gold investments and financial products. Owned the full app lifecycle including App Store and Play Store publishing, CodePush OTA updates, and CI/CD pipelines. Mentored junior developers through code reviews and established coding standards across the mobile team.",
+        "Teen fintech app on iOS and Android. Joined as a mobile developer and became sole mobile architect — security, native modules, animation, and release engineering.",
+      roles: [
+        {
+          title: "Senior Mobile Developer",
+          start: "Oct 2024",
+          end: "Jan 2026",
+          bullets: [
+            "Owned mobile architecture, releases, and on-call as sole mobile architect for a teen fintech app on iOS and Android with 500k+ downloads.",
+            "Built custom Kotlin and Swift native modules performing ECDH key exchange (prime256v1) and AES encryption, so card transaction data was encrypted on-device rather than in a JS bundle a rooted device could read.",
+            "Hardened the app against the threats a fintech product faces — root and jailbreak detection, runtime protection, SSL pinning, biometric auth, encrypted storage, encrypted payloads, and release-build hardening with ProGuard and Hermes bytecode.",
+            "Shipped a Fixed Deposits product solo end to end and redesigned the gold investment flow around pre-calculated return projections, making the returns clear before a teenager committed money.",
+            "Cut hotfix turnaround by moving fixes to CodePush OTA checked on app resume, and kept production crashes debuggable by shipping source maps to Sentry on every release.",
+            "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, enabling feature teams to ship consistent motion without touching native code.",
+          ],
+        },
+        {
+          title: "Mobile Developer",
+          start: "Feb 2022",
+          end: "Oct 2024",
+          bullets: [
+            "Built the core prepaid-card and savings flows in React Native on Hermes with Redux, establishing the state and navigation architecture the app still runs on today.",
+            "Hardened the app lifecycle for fintech edge cases — re-authentication after backgrounding, force-update and maintenance gates, and deep links queued through PIN verification rather than dropped.",
+          ],
+        },
+      ],
     },
     {
-      company: "doyou.ae",
-      href: "https://doyou.ae",
-      badges: ["Freelance"],
-      location: "Dubai, UAE (Remote)",
-      title: "Frontend Lead",
-      logoUrl: "/doyouae.svg",
-      start: "2024",
-      end: "End of 2025",
+      company: "National Finance Olympiad",
+      badges: ["Powered by Streak"],
+      href: "https://nationalfinanceolympiad.com/",
+      location: "Bengaluru, Karnataka",
+      title: "Senior Frontend Developer",
+      logoUrl: "/NFOLogo.svg",
+      start: "Feb 2022",
+      end: "Present",
       description:
-        "Served as the Frontend Lead for this Dubai-based startup while maintaining my full-time role, building scalable applications with Next.js.",
+        "Streak's financial education arm, built by the same team and run alongside my mobile work at Streak. Owned the web platform end to end — frontend, Django/GCP services, Postgres schema design, payments, growth instrumentation, and the LLM pipelines behind adaptive learning and question-paper generation.",
+      roles: [
+        {
+          title: "Senior Frontend Developer",
+          start: "Mar 2024",
+          end: "Present",
+          bullets: [
+            "Led the student portal's React-to-Next.js migration on a written decision record and runbook with a rollback path, cutting first contentful paint from 3.2s to 0.8s with zero downtime at cutover.",
+            "Designed the Postgres/Supabase schemas and server-side payment verification across 4 gateways, validating every transaction against the gateway rather than trusting client-side success callbacks.",
+            "Built the attribution and analytics infrastructure end to end — multi-pixel Meta CAPI on Django/GCP with cross-subdomain session stitching, and a WebEngage migration onto CUID identity resolution across a two-brand unification — moving conversion signal server-side with campaign history intact.",
+            "Built a RAG adaptive learning platform on pgvector and the Claude API, keeping embeddings in the existing Postgres rather than running a second datastore — A/B tested with 500 students.",
+            "Shipped a LangGraph multi-agent pipeline for question-paper generation, separating generation, verification, and difficulty balancing so every paper is machine-checked before release — 50 papers in production.",
+          ],
+        },
+        {
+          title: "Frontend Developer",
+          start: "Feb 2022",
+          end: "Mar 2024",
+          bullets: [
+            "Built the web ecosystem from scratch — student, teacher, and admin portals plus two checkout surfaces, now serving 500+ schools and 10,000+ students.",
+            "Architected a Turborepo monorepo housing 3 checkout apps on shared payment infrastructure, so a gateway change shipped once instead of three times, instrumented with A/B testing and GA4 conversion tracking.",
+            "Integrated Razorpay, Stripe, and BillDesk with retry logic and reconciliation across UPI, cards, net banking, and international payments, on layouts targeting the low-end Android devices most students sit exams on.",
+          ],
+        },
+      ],
     },
   ],
   education: [
@@ -118,11 +198,11 @@ export const DATA = {
   projects: [
     {
       title: "Baki",
-      href: "https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323",
+      href: "https://apps.apple.com/in/app/baki-budget-expense-tracker/id6760950323",
       dates: "2025",
       active: true,
       description:
-        "A commitment-first budgeting app for iOS. Shows your real available balance — salary minus locked commitments minus spending — before you spend. Built with bare React Native 0.84, Supabase, RevenueCat, and a full split-expense system. Features animated mesh gradients, shared element transitions, AI-powered trip planning, and a Pro tier with Weave spreadsheet sync.",
+        "Shipped and live on the App Store. A commitment-first budgeting app for iOS that shows your real available balance — salary minus locked commitments minus spending — before you spend. Built solo on bare React Native 0.84, Supabase, and RevenueCat, with a full split-expense system, animated mesh gradients, shared element transitions, AI-powered trip planning, and a paid Pro tier with Weave spreadsheet sync.",
       technologies: [
         "React Native",
         "TypeScript",
@@ -138,8 +218,8 @@ export const DATA = {
       links: [
         {
           type: "App Store",
-          href: "https://apps.apple.com/us/app/baki-budget-expense-tracker/id6760950323",
-          icon: <Icons.globe className="size-3" />,
+          href: "https://apps.apple.com/in/app/baki-budget-expense-tracker/id6760950323",
+          icon: <Icons.apple className="size-3" />,
         },
         {
           type: "Website",
@@ -220,7 +300,7 @@ export const DATA = {
     },
     {
       title: "Wotter",
-      href: "https://apps.apple.com/in/app/wotter/id6479811630",
+      href: "https://apps.apple.com/us/app/wotter/id6479811630",
       dates: "2024",
       active: true,
       description:
@@ -242,8 +322,8 @@ export const DATA = {
       links: [
         {
           type: "App Store",
-          href: "https://apps.apple.com/in/app/wotter/id6479811630",
-          icon: <Icons.globe className="size-3" />,
+          href: "https://apps.apple.com/us/app/wotter/id6479811630",
+          icon: <Icons.apple className="size-3" />,
         },
       ],
       image: "/Wotter.png",

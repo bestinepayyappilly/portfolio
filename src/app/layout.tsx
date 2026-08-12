@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
   title: {
-    default: "Bestine Payyappilly | Mobile Developer | Frontend Developer",
+    default: `${DATA.name} | ${DATA.headline}`,
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "Bangalore",
   ],
   openGraph: {
-    title: "Bestine Payyappilly | Mobile Developer | Frontend Developer",
+    title: `${DATA.name} | ${DATA.headline}`,
     description: DATA.description,
     url: DATA.url,
     siteName: `${DATA.name}`,

@@ -3,46 +3,18 @@
 import { Download, Loader2 } from "lucide-react";
 import { useCallback, useState } from "react";
 
-async function loadAvatarAsDataUri(): Promise<string | undefined> {
-  try {
-    const res = await fetch("/me.webp");
-    const blob = await res.blob();
-    // Convert webp to png via canvas for react-pdf compatibility
-    const img = document.createElement("img");
-    const url = URL.createObjectURL(blob);
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = reject;
-      img.src = url;
-    });
-    const canvas = document.createElement("canvas");
-    // Scale down to 104x104 (2x of 52pt display size) for small file size
-    const size = 104;
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return undefined;
-    ctx.drawImage(img, 0, 0, size, size);
-    URL.revokeObjectURL(url);
-    return canvas.toDataURL("image/jpeg", 0.8);
-  } catch {
-    return undefined;
-  }
-}
-
 export function DownloadResumeButton() {
   const [loading, setLoading] = useState(false);
 
   const handleDownload = useCallback(async () => {
     setLoading(true);
     try {
-      const [{ pdf }, { ResumePDF }, avatarDataUri] = await Promise.all([
+      const [{ pdf }, { ResumePDF }] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/ui/resume-pdf"),
-        loadAvatarAsDataUri(),
       ]);
 
-      const blob = await pdf(<ResumePDF avatarDataUri={avatarDataUri} />).toBlob();
+      const blob = await pdf(<ResumePDF />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

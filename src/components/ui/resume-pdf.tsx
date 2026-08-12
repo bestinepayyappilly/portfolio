@@ -4,133 +4,145 @@ import {
   Text,
   View,
   Link,
-  Image,
   StyleSheet,
+  Svg,
+  Path,
 } from "@react-pdf/renderer";
+import { DATA } from "@/data/resume";
+
+const APPLE_LOGO_PATH =
+  "M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.417-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701";
 
 const c = {
   black: "#000000",
   dark: "#111111",
-  body: "#333333",
+  body: "#2f2f2f",
   muted: "#555555",
-  light: "#888888",
-  border: "#d4d4d4",
-  accent: "#2563eb",
-  sectionBg: "#f8f9fa",
+  light: "#7a7a7a",
+  border: "#dcdcdc",
+  accent: "#1d4ed8",
   white: "#ffffff",
 };
 
 const s = StyleSheet.create({
   page: {
     fontFamily: "Helvetica",
-    fontSize: 9,
+    fontSize: 10,
     color: c.dark,
     backgroundColor: c.white,
-    paddingTop: 20,
-    paddingBottom: 18,
-    paddingHorizontal: 28,
-    lineHeight: 1.3,
+    paddingTop: 38,
+    paddingBottom: 40,
+    paddingHorizontal: 44,
+    lineHeight: 1.45,
   },
   // Header
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
+  header: {
+    marginBottom: 16,
   },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-  },
-  headerText: { flex: 1 },
   name: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 700,
     color: c.black,
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
+    lineHeight: 1.15,
   },
   subtitle: {
-    fontSize: 10,
-    color: c.muted,
-    marginTop: 15,
+    fontSize: 11.5,
+    color: c.dark,
+    marginTop: 4,
+    letterSpacing: 0.2,
   },
   contactRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 4,
-    gap: 3,
+    marginTop: 6,
+    gap: 4,
   },
-  contactText: { fontSize: 8.5, color: c.muted },
-  link: { fontSize: 8.5, color: c.accent, textDecoration: "none" },
-  sep: { fontSize: 8.5, color: c.light, marginHorizontal: 1 },
-  // Layout
-  hr: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: c.border,
-    marginTop: 7,
-    marginBottom: 7,
-  },
-  columns: {
+  contactRowTight: {
     flexDirection: "row",
-    gap: 18,
-    flex: 1,
+    flexWrap: "wrap",
+    marginTop: 2,
+    gap: 4,
   },
-  leftCol: { width: "32%" },
-  rightCol: { flex: 1 },
+  contactText: { fontSize: 9, color: c.muted },
+  link: { fontSize: 9, color: c.accent, textDecoration: "none" },
+  sep: { fontSize: 9, color: c.light },
   // Sections
+  section: { marginTop: 16 },
   sectionTitle: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: c.black,
+    marginBottom: 8,
+    textTransform: "uppercase",
+    // Kept low on purpose: wider tracking makes pdftotext (and ATS parsers)
+    // extract section headings as "S U M M A RY" instead of "SUMMARY"
+    letterSpacing: 0.6,
+    borderBottomWidth: 0.75,
+    borderBottomColor: c.border,
+    paddingBottom: 4,
+  },
+  summaryText: { fontSize: 10, color: c.body, lineHeight: 1.5 },
+  // Expertise
+  skillRow: { flexDirection: "row", marginBottom: 4 },
+  skillLabel: {
+    width: 118,
     fontSize: 9.5,
     fontWeight: 700,
     color: c.black,
-    marginBottom: 4,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    borderBottomWidth: 1,
-    borderBottomColor: c.accent,
-    paddingBottom: 2,
   },
-  // Skills
-  skillGroup: { marginBottom: 4 },
-  skillLabel: {
-    fontSize: 8.5,
-    fontWeight: 700,
-    color: c.black,
-    marginBottom: 1,
-  },
-  skillText: { fontSize: 8, color: c.body, lineHeight: 1.35 },
-  // Jobs
-  jobHeader: {
+  skillText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.4 },
+  // Experience
+  companyBlock: { marginBottom: 12 },
+  companyRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginTop: 5,
-    marginBottom: 1,
   },
-  jobTitle: { fontSize: 9.5, fontWeight: 700, color: c.black },
-  jobCompanyRow: {
+  companyName: { fontSize: 12, fontWeight: 700, color: c.black },
+  companyMeta: { fontSize: 9, color: c.muted },
+  companyNote: {
+    fontSize: 9,
+    color: c.muted,
+    fontStyle: "italic",
+    marginTop: 2,
+    marginBottom: 2,
+  },
+  roleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginBottom: 1,
+    marginTop: 7,
+    marginBottom: 3,
   },
-  jobCompany: { fontSize: 8.5, color: c.muted, fontStyle: "italic" },
-  jobDate: { fontSize: 8, color: c.light },
+  roleTitle: { fontSize: 10, fontWeight: 700, color: c.body, flex: 1 },
+  roleDate: { fontSize: 9, color: c.light },
   // Bullets
-  bullet: { flexDirection: "row", marginBottom: 1.5, paddingLeft: 2 },
-  bulletDot: { width: 8, fontSize: 8.5, color: c.light },
-  bulletText: { flex: 1, fontSize: 8.5, color: c.body, lineHeight: 1.35 },
+  bullet: { flexDirection: "row", marginBottom: 3, paddingRight: 4 },
+  bulletDot: { width: 10, fontSize: 9.5, color: c.light },
+  bulletText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.45 },
   // Projects
-  projectRow: { marginBottom: 4 },
-  projectName: { fontSize: 9, fontWeight: 700, color: c.black },
-  projectDesc: { fontSize: 8.5, color: c.body, lineHeight: 1.4, marginTop: 1 },
-  projectTech: { fontSize: 7.5, color: c.light, fontStyle: "italic" },
+  projectRow: { marginBottom: 8 },
+  projectHead: { flexDirection: "row", alignItems: "center", gap: 4 },
+  projectName: { fontSize: 10.5, fontWeight: 700, color: c.black },
+  projectNameLink: {
+    fontSize: 10.5,
+    fontWeight: 700,
+    color: c.accent,
+    textDecoration: "none",
+  },
+  projectDesc: { fontSize: 9.5, color: c.body, lineHeight: 1.4, marginTop: 2 },
+  projectTech: { fontSize: 9, color: c.light, fontStyle: "italic", marginTop: 1 },
   // Education
-  eduTitle: { fontSize: 9.5, fontWeight: 700, color: c.black },
-  eduMeta: { fontSize: 8.5, color: c.light, marginTop: 1 },
-  eduDegree: { fontSize: 8.5, color: c.body, marginTop: 2 },
-  // Summary
-  summaryText: { fontSize: 9, color: c.body, lineHeight: 1.5 },
+  eduRow: { flexDirection: "row", justifyContent: "space-between" },
+  eduText: { fontSize: 10, color: c.body },
+  eduDate: { fontSize: 9, color: c.light },
 });
+
+const BAKI_APP_STORE_URL =
+  DATA.projects.find((p) => p.title === "Baki")?.href ?? DATA.url;
+const WOTTER_APP_STORE_URL =
+  DATA.projects.find((p) => p.title === "Wotter")?.href ?? DATA.url;
 
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
@@ -145,300 +157,178 @@ function SectionTitle({ children }: { children: string }) {
   return <Text style={s.sectionTitle}>{children}</Text>;
 }
 
-interface ResumePDFProps {
-  avatarDataUri?: string;
+function AppleMark() {
+  return (
+    <Svg width={8} height={8} viewBox="0 0 24 24">
+      <Path d={APPLE_LOGO_PATH} fill={c.accent} />
+    </Svg>
+  );
 }
 
-export function ResumePDF({ avatarDataUri }: ResumePDFProps) {
+export function ResumePDF() {
   return (
     <Document
       title="Bestine Payyappilly — Resume"
       author="Bestine Payyappilly"
-      subject="Senior Mobile Developer & Senior Full Stack Engineer"
+      subject={DATA.headline}
     >
       <Page size="A4" style={s.page}>
         {/* ─── HEADER ─── */}
-        <View style={s.headerRow}>
-          {avatarDataUri && <Image style={s.avatar} src={avatarDataUri} />}
-          <View style={s.headerText}>
-            <Text style={s.name}>Bestine Payyappilly</Text>
-            <Text style={s.subtitle}>
-              Senior Mobile Developer | Senior Full Stack Engineer
-            </Text>
-            <View style={s.contactRow}>
-              <Text style={s.contactText}>Bangalore, India</Text>
-              <Text style={s.sep}>|</Text>
-              <Link src="mailto:bestine1234@gmail.com" style={s.link}>
-                bestine1234@gmail.com
-              </Link>
-              <Text style={s.sep}>|</Text>
-              <Link src="tel:+919895866303" style={s.link}>
-                +91 9895866303
-              </Link>
-              <Text style={s.sep}>|</Text>
-              <Link
-                src="https://linkedin.com/in/bestine-payyappilly-030858113"
-                style={s.link}
-              >
-                LinkedIn
-              </Link>
-              <Text style={s.sep}>|</Text>
-              <Link src="https://github.com/bestinepayyappilly" style={s.link}>
-                GitHub
-              </Link>
-              <Text style={s.sep}>|</Text>
-              <Link src="https://bestinepayyappilly.com" style={s.link}>
-                bestinepayyappilly.com
-              </Link>
-            </View>
+        <View style={s.header}>
+          <Text style={s.name}>Bestine Payyappilly</Text>
+          <Text style={s.subtitle}>{DATA.headline}</Text>
+          {/* Split across two rows so the line never wraps mid-separator */}
+          <View style={s.contactRow}>
+            <Text style={s.contactText}>Bangalore, India</Text>
+            <Text style={s.sep}>|</Text>
+            <Link src="mailto:bestine1234@gmail.com" style={s.link}>
+              bestine1234@gmail.com
+            </Link>
+            <Text style={s.sep}>|</Text>
+            <Link src="tel:+919895866303" style={s.link}>
+              +91 9895866303
+            </Link>
+          </View>
+          <View style={s.contactRowTight}>
+            <Link
+              src="https://linkedin.com/in/bestine-payyappilly"
+              style={s.link}
+            >
+              LinkedIn
+            </Link>
+            <Text style={s.sep}>|</Text>
+            <Link src="https://github.com/bestinepayyappilly" style={s.link}>
+              GitHub
+            </Link>
+            <Text style={s.sep}>|</Text>
+            <Link src="https://bestinepayyappilly.com" style={s.link}>
+              bestinepayyappilly.com
+            </Link>
           </View>
         </View>
 
-        <View style={s.hr} />
+        {/* ─── SUMMARY ─── */}
+        <View style={s.section}>
+          <SectionTitle>Summary</SectionTitle>
+          <Text style={s.summaryText}>{DATA.summary}</Text>
+        </View>
 
-        {/* ─── TWO COLUMNS ─── */}
-        <View style={s.columns}>
-          {/* ─── LEFT COLUMN ─── */}
-          <View style={s.leftCol}>
-            <SectionTitle>Technical Skills</SectionTitle>
+        {/* ─── CORE TECHNICAL EXPERTISE ─── */}
+        <View style={s.section}>
+          <SectionTitle>Core Technical Expertise</SectionTitle>
+          {DATA.expertise.map((group) => (
+            <View key={group.label} style={s.skillRow} wrap={false}>
+              <Text style={s.skillLabel}>{group.label}</Text>
+              <Text style={s.skillText}>{group.items}</Text>
+            </View>
+          ))}
+        </View>
 
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Mobile</Text>
-              <Text style={s.skillText}>
-                React Native, React Hooks, Redux/Redux Toolkit, Context API,
-                iOS (Xcode, provisioning, certificates), Android (Kotlin/Java,
-                Gradle), Reanimated, Skia, Lottie, Rive, CodePush
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Integrations</Text>
-              <Text style={s.skillText}>
-                REST APIs, GraphQL, JSON, Native modules & bridging, Push
-                notifications, Deep linking, Analytics (GA4, Firebase)
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Offline & Storage</Text>
-              <Text style={s.skillText}>
-                MMKV, SQLite, Realm, Supabase, PostgreSQL, Firebase
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Frontend</Text>
-              <Text style={s.skillText}>
-                React, Next.js, TypeScript, JavaScript (ES6+), TailwindCSS,
-                Framer Motion, Vite
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Payments</Text>
-              <Text style={s.skillText}>
-                Razorpay, Stripe, BillDesk, Cashfree — UPI, Cards, Net Banking,
-                Wallets, International
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>Security</Text>
-              <Text style={s.skillText}>
-                ECDH key exchange, AES/CBC encryption, SSL pinning, FreeRASP,
-                ProGuard, Hermes bytecode
-              </Text>
-            </View>
-            <View style={s.skillGroup}>
-              <Text style={s.skillLabel}>DevOps & CI/CD</Text>
-              <Text style={s.skillText}>
-                Fastlane, GitHub Actions, App Center, Bitrise, Turborepo,
-                Sentry, Docker, Vercel, Git, Jest, ESLint
-              </Text>
-            </View>
+        {/* ─── EXPERIENCE ─── */}
+        <View style={s.section}>
+          <SectionTitle>Professional Experience</SectionTitle>
+          {DATA.work.map((job) => {
+            const [firstRole, ...restRoles] = job.roles;
+            const [firstBullet, ...restBullets] = firstRole.bullets;
+            return (
+              <View key={job.company} style={s.companyBlock}>
+                {/* Company heading, its first role, and that role's first
+                    bullet travel together, so a heading never strands itself
+                    at the foot of a page */}
+                <View wrap={false}>
+                  <View style={s.companyRow}>
+                    <Text style={s.companyName}>
+                      {job.company}
+                      {job.badges.length > 0 && ` (${job.badges.join(", ")})`}
+                    </Text>
+                    <Text style={s.companyMeta}>
+                      {job.start} – {job.end} | {job.location}
+                    </Text>
+                  </View>
+                  <View style={s.roleRow}>
+                    <Text style={s.roleTitle}>{firstRole.title}</Text>
+                    <Text style={s.roleDate}>
+                      {firstRole.start} – {firstRole.end}
+                    </Text>
+                  </View>
+                  <Bullet>{firstBullet}</Bullet>
+                </View>
+                {restBullets.map((bullet) => (
+                  <Bullet key={bullet}>{bullet}</Bullet>
+                ))}
+                {restRoles.map((role) => (
+                  <View key={role.title + role.start}>
+                    <View style={s.roleRow} wrap={false} minPresenceAhead={60}>
+                      <Text style={s.roleTitle}>{role.title}</Text>
+                      <Text style={s.roleDate}>
+                        {role.start} – {role.end}
+                      </Text>
+                    </View>
+                    {role.bullets.map((bullet) => (
+                      <Bullet key={bullet}>{bullet}</Bullet>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            );
+          })}
+        </View>
 
-            <View style={{ marginTop: 8 }} />
-            <SectionTitle>Education</SectionTitle>
-            <Text style={s.eduTitle}>SRM University</Text>
-            <Text style={s.eduMeta}>2018 - 2022</Text>
-            <Text style={s.eduDegree}>
-              B.Tech in Electronics {"\n"}& Communication Engineering
+        {/* ─── LEADERSHIP EXPERIENCE ─── */}
+        <View style={s.section}>
+          <SectionTitle>Leadership Experience</SectionTitle>
+          {DATA.leadership.map((item) => (
+            <Bullet key={item}>{item}</Bullet>
+          ))}
+        </View>
+
+        {/* ─── SELECTED PROJECTS ─── */}
+        <View style={s.section}>
+          <SectionTitle>Personal Projects</SectionTitle>
+
+          <View style={s.projectRow} wrap={false}>
+            <View style={s.projectHead}>
+              <AppleMark />
+              <Link src={BAKI_APP_STORE_URL} style={s.projectNameLink}>
+                Baki — live on the App Store
+              </Link>
+            </View>
+            <Text style={s.projectDesc}>
+              Commitment-first budgeting app for iOS, built and shipped solo —
+              real available balance, a five-mode split-expense system, AI trip
+              planning, and a paid tier on RevenueCat.
             </Text>
-
-            <View style={{ marginTop: 8 }} />
-            <SectionTitle>Key Projects</SectionTitle>
-
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>Baki</Text>
-              <Text style={s.projectTech}>
-                React Native, TS, Supabase, RevenueCat, Reanimated 4, Skia
-              </Text>
-              <Text style={s.projectDesc}>
-                Commitment-first budgeting iOS app — real available balance,
-                split expenses (5 modes), AI trip planning, RevenueCat Pro tier
-              </Text>
-            </View>
-
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>StreakCard</Text>
-              <Text style={s.projectTech}>React Native, TS, Redux, Skia</Text>
-              <Text style={s.projectDesc}>
-                Fintech app for teens — prepaid card, savings, gold investing,
-                7-layer ECDH encryption
-              </Text>
-            </View>
-
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>NFO Checkout Monorepo</Text>
-              <Text style={s.projectTech}>React, TS, Turborepo, Razorpay</Text>
-              <Text style={s.projectDesc}>
-                3 checkout apps with multi-gateway payments, A/B testing,
-                dynamic pricing
-              </Text>
-            </View>
-
-            <View style={s.projectRow}>
-              <Text style={s.projectName}>NFO Student Hub</Text>
-              <Text style={s.projectTech}>Next.js, TS, TailwindCSS</Text>
-              <Text style={s.projectDesc}>
-                Student portal with dashboard, proctored tests, certificates, 3
-                payment gateways
-              </Text>
-            </View>
-
+            <Text style={s.projectTech}>
+              React Native, TypeScript, Supabase, RevenueCat, Reanimated 4, Skia
+            </Text>
           </View>
 
-          {/* ─── RIGHT COLUMN ─── */}
-          <View style={s.rightCol}>
-            <SectionTitle>Summary</SectionTitle>
-            <Text style={s.summaryText}>
-              Senior React Native engineer with 4+ years shipping production apps across mobile and web. Sole mobile architect for a YC-backed fintech startup — owned iOS/Android development, payment flows, app security, and full app lifecycle. Built entire product ecosystems from React Native to Next.js portals. Mentored developers and drove coding standards.
+          <View style={s.projectRow} wrap={false}>
+            <View style={s.projectHead}>
+              <AppleMark />
+              <Link src={WOTTER_APP_STORE_URL} style={s.projectNameLink}>
+                Wotter — live on the App Store
+              </Link>
+            </View>
+            <Text style={s.projectDesc}>
+              Cross-platform hydration tracker for iOS and Android — onboarding,
+              local notification reminders, and subscription management.
             </Text>
+            <Text style={s.projectTech}>
+              React Native, TypeScript, Redux Toolkit, Skia, MMKV
+            </Text>
+          </View>
+        </View>
 
-            <View style={{ marginTop: 6 }} />
-            <SectionTitle>Work Experience</SectionTitle>
-
-            {/* NFO */}
-            <View style={s.jobHeader}>
-              <Text style={s.jobTitle}>Senior Full Stack Developer</Text>
-            </View>
-            <View style={s.jobCompanyRow}>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              >
-                <Link
-                  src="https://nationalfinanceolympiad.com/"
-                  style={[
-                    s.jobCompany,
-                    { color: c.accent, textDecoration: "none" },
-                  ]}
-                >
-                  National Finance Olympiad
-                </Link>
-                <Text
-                  style={{
-                    fontSize: 6,
-                    color: c.white,
-                    backgroundColor: c.accent,
-                    paddingHorizontal: 3,
-                    paddingVertical: 1,
-                    borderRadius: 2,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  YC W22
-                </Text>
-              </View>
-              <Text style={s.jobDate}>
-                2022 - Present | Bangalore, Karnataka
-              </Text>
-            </View>
-            <Bullet>
-              Shipped 5 production web apps serving 10,000+ students across
-              checkout systems, student portal, admin panel, and teacher portal
-            </Bullet>
-            <Bullet>
-              Integrated 3 payment gateways (Razorpay, Stripe, BillDesk)
-              processing thousands of transactions with retry logic and
-              server-side verification
-            </Bullet>
-            <Bullet>
-              Migrated student portal from CRA to Next.js — reduced First
-              Contentful Paint by 75% (3.2s to 0.8s), improving SEO rankings and
-              user retention
-            </Bullet>
-            <Bullet>
-              Architected Turborepo monorepo with 3 checkout apps, A/B testing, and 1,200+ GA4-tracked conversion events
-            </Bullet>
-
-            {/* Streak */}
-            <View style={s.jobHeader}>
-              <Text style={s.jobTitle}>Senior Mobile Developer</Text>
-            </View>
-            <View style={s.jobCompanyRow}>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              >
-                <Link
-                  src="https://streakcard.com/"
-                  style={[
-                    s.jobCompany,
-                    { color: c.accent, textDecoration: "none" },
-                  ]}
-                >
-                  Streak
-                </Link>
-                <Text
-                  style={{
-                    fontSize: 6,
-                    color: c.white,
-                    backgroundColor: c.accent,
-                    paddingHorizontal: 3,
-                    paddingVertical: 1,
-                    borderRadius: 2,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  YC W22
-                </Text>
-              </View>
-              <Text style={s.jobDate}>
-                End of 2021 - 2024 | Bangalore, Karnataka
-              </Text>
-            </View>
-            <Bullet>
-              Progressed from intern to sole mobile architect for a funded
-              fintech app on iOS and Android with 500,000+ downloads
-            </Bullet>
-            <Bullet>
-              Engineered 7-layer security stack (ECDH key exchange, SSL pinning,
-              FreeRASP) with custom Kotlin and Swift native modules for
-              encrypted payment flows
-            </Bullet>
-            <Bullet>
-              Single-handedly shipped a new Fixed Deposits app end-to-end —
-              architecture, UI/UX, API integration — and redesigned gold
-              investment flow
-            </Bullet>
-            <Bullet>
-              Owned full app lifecycle: App Store and Play Store publishing,
-              CodePush OTA updates, and CI/CD pipelines via Fastlane
-            </Bullet>
-            <Bullet>
-              Mentored junior developers through code reviews and established
-              mobile coding standards across the team
-            </Bullet>
-
-            {/* doyou.ae */}
-            <View style={s.jobHeader}>
-              <Text style={s.jobTitle}>Frontend Lead</Text>
-            </View>
-            <View style={s.jobCompanyRow}>
-              <Text style={s.jobCompany}>doyou.ae</Text>
-              <Text style={s.jobDate}>
-                2024 - End of 2025 | Dubai, UAE (Remote)
-              </Text>
-            </View>
-            <Bullet>
-              Led frontend development for a Dubai-based startup, building and
-              delivering 3 scalable Next.js applications as a freelance lead
-              while maintaining full-time role
-            </Bullet>
+        {/* ─── EDUCATION ─── */}
+        <View style={s.section}>
+          <SectionTitle>Education</SectionTitle>
+          <View style={s.eduRow} wrap={false}>
+            <Text style={s.eduText}>
+              SRM University — B.Tech, Electronics &amp; Communication
+              Engineering
+            </Text>
+            <Text style={s.eduDate}>2022</Text>
           </View>
         </View>
       </Page>
