@@ -1,6 +1,7 @@
 import { DATA } from "@/data/resume";
 import { Icons } from "@/components/icons";
 import { DownloadResumeButton } from "@/components/ui/download-resume-button";
+import { BoldText } from "@/lib/bold-text";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,12 +27,9 @@ export default function ResumePage() {
         id="resume-content"
         className="prose max-w-full font-sans text-foreground dark:prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground"
       >
-        {/* Header */}
         <div className="not-prose mb-8 flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">{DATA.name}</h1>
-          <p className="text-lg text-muted-foreground">
-            {DATA.headline}
-          </p>
+          <p className="text-lg text-muted-foreground">{DATA.headline}</p>
           <p className="text-sm text-muted-foreground">
             {DATA.location} &middot;{" "}
             <a
@@ -76,13 +74,13 @@ export default function ResumePage() {
 
         <hr />
 
-        {/* Summary */}
         <h2>Summary</h2>
-        <p>{DATA.summary}</p>
+        <p>
+          <BoldText text={DATA.summary} />
+        </p>
 
         <hr />
 
-        {/* Core Technical Expertise */}
         <h2>Core Technical Expertise</h2>
         <ul>
           {DATA.expertise.map((group) => (
@@ -94,7 +92,6 @@ export default function ResumePage() {
 
         <hr />
 
-        {/* Work Experience */}
         <h2>Professional Experience</h2>
 
         {DATA.work.map((job) => (
@@ -133,7 +130,9 @@ export default function ResumePage() {
                 </p>
                 <ul className="mt-0!">
                   {role.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
+                    <li key={bullet}>
+                      <BoldText text={bullet} />
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -143,17 +142,6 @@ export default function ResumePage() {
 
         <hr />
 
-        {/* Leadership */}
-        <h2>Leadership Experience</h2>
-        <ul>
-          {DATA.leadership.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-
-        <hr />
-
-        {/* Projects */}
         <h2>Personal Projects</h2>
 
         <h3>
@@ -170,21 +158,11 @@ export default function ResumePage() {
             Live on the App Store
           </span>
         </h3>
-        <p className="text-sm! mt-0!">
-          React Native &middot; TypeScript &middot; Supabase &middot; RevenueCat
-          &middot; Reanimated 4 &middot; Skia
+        <p>
+          Designed, built, and shipped solo — commitment-first budgeting that
+          shows real available balance before you spend, with five-mode expense
+          splitting and a paid subscription tier.
         </p>
-        <ul>
-          <li>
-            Commitment-first budgeting app for iOS, built and shipped solo —
-            shows real available balance (salary minus locked commitments minus
-            spending) before you spend
-          </li>
-          <li>
-            Bare React Native on the New Architecture, with a five-mode
-            split-expense system, AI trip planning, and a paid tier on RevenueCat
-          </li>
-        </ul>
 
         <h3>
           <a
@@ -200,20 +178,13 @@ export default function ResumePage() {
             Live on the App Store
           </span>
         </h3>
-        <p className="text-sm! mt-0!">
-          React Native &middot; TypeScript &middot; Redux Toolkit &middot; Skia
-          &middot; MMKV
+        <p>
+          Sole engineer, partnered with a designer — hydration tracking with
+          onboarding, local notification reminders, and subscription management.
         </p>
-        <ul>
-          <li>
-            Cross-platform hydration tracker for iOS and Android — onboarding,
-            local notification reminders, and subscription management
-          </li>
-        </ul>
 
         <hr />
 
-        {/* Education */}
         <h2>Education</h2>
         <p>
           <strong>SRM University</strong> — B.Tech, Electronics &amp;

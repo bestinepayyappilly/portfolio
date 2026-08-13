@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { DATA } from "@/data/resume";
+import { BoldText } from "@/lib/bold-text";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -104,7 +105,9 @@ export default function WorkSection() {
                     </div>
                     <ul className="list-disc grid gap-1 pl-4 marker:text-muted-foreground/50">
                       {role.bullets.map((bullet) => (
-                        <li key={bullet}>{bullet}</li>
+                        <li key={bullet}>
+                          <BoldText text={bullet} />
+                        </li>
                       ))}
                     </ul>
                   </div>

@@ -21,10 +21,9 @@ export const DATA = {
   url: "https://bestinepayyappilly.com",
   location: "Bangalore, Karnataka, India",
   locationLink: "https://www.google.com/maps/place/Bangalore",
-  description:
-    `${HEADLINE}. I build the mobile app, the web platform, and the backend behind them.`,
+  description: `${HEADLINE}. I build the mobile app, the web platform, and the backend behind them.`,
   summary:
-    "Senior mobile engineer with ~5 years building production apps in React Native, with native iOS and Android work in Swift and Kotlin. Sole mobile architect for a YC-backed teen fintech app with 500k+ downloads, owning architecture, on-device payment encryption, security hardening, releases, and on-call. Shipped financial products end to end and mentor engineers across the mobile and web teams. Also build the full-stack platform beside it — Next.js, Django, Postgres, payments, and production LLM pipelines.",
+    "Senior Mobile Engineer with ~5 years building production iOS and Android apps in React Native, Swift, and Kotlin. Sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, owning mobile architecture, on-device payment encryption, security hardening, release engineering, and on-call. Experienced in shipping financial products end to end, with additional product engineering depth across Next.js, Django, payments, and production AI systems.",
   avatarUrl: "/me.webp",
   skills: [
     { name: "React Native", icon: ReactLight },
@@ -63,16 +62,9 @@ export const DATA = {
     {
       label: "Additional Engineering",
       items:
-        "Next.js, Node.js, Django, PostgreSQL, Supabase, GraphQL, Firebase, GCP",
+        "Next.js, Node.js, Django, PostgreSQL, Supabase, Firebase, GCP",
     },
     { label: "AI / LLM", items: "Claude API, RAG, pgvector, LangGraph" },
-  ],
-  // Concrete leadership outcomes — people, standards, and ownership — not
-  // a keyword list. Kept separate so the PDF and web resume stay in sync.
-  leadership: [
-    "Mentored 4 engineers across the mobile and web teams through code review, and set the standards and documentation both codebases run on.",
-    "Partnered with founders on scope and prioritisation from discovery through launch and iteration.",
-    "Owned mobile architecture, releases, and on-call as sole mobile architect — establishing patterns and review practices for a production fintech app with 500k+ downloads.",
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -121,19 +113,20 @@ export const DATA = {
       start: "Feb 2022",
       end: "Jan 2026",
       description:
-        "Teen fintech app on iOS and Android. Joined as a mobile developer and became sole mobile architect — security, native modules, animation, and release engineering.",
+        "Teen fintech app on iOS and Android — prepaid card, savings, fixed deposits, and gold investing. Joined as a mobile developer and grew into the role of sole mobile architect.",
       roles: [
         {
           title: "Senior Mobile Developer",
           start: "Oct 2024",
           end: "Jan 2026",
           bullets: [
-            "Owned mobile architecture, releases, and on-call as sole mobile architect for a teen fintech app on iOS and Android with 500k+ downloads.",
-            "Built custom Kotlin and Swift native modules performing ECDH key exchange (prime256v1) and AES encryption, so card transaction data was encrypted on-device rather than in a JS bundle a rooted device could read.",
-            "Hardened the app against the threats a fintech product faces — root and jailbreak detection, runtime protection, SSL pinning, biometric auth, encrypted storage, encrypted payloads, and release-build hardening with ProGuard and Hermes bytecode.",
-            "Shipped a Fixed Deposits product solo end to end and redesigned the gold investment flow around pre-calculated return projections, making the returns clear before a teenager committed money.",
-            "Cut hotfix turnaround by moving fixes to CodePush OTA checked on app resume, and kept production crashes debuggable by shipping source maps to Sentry on every release.",
+            "Owned mobile architecture, release engineering, and on-call as sole mobile architect for a teen fintech app on iOS and Android — **500k+ downloads**.",
+            "Designed and shipped custom Swift and Kotlin native modules for ECDH key exchange (prime256v1) and AES encryption, moving card-transaction crypto on-device and out of the JS bundle.",
+            "Hardened the app against mobile threats — root/jailbreak detection, runtime protection, SSL pinning, biometric authentication, encrypted storage and payloads, and release-build hardening.",
+            "Delivered a Fixed Deposits product solo end to end and redesigned the gold investment flow around pre-calculated return projections, making expected outcomes easier to understand before investing.",
+            "Improved hotfix turnaround by implementing CodePush OTA updates checked on app resume, and automated Sentry source-map uploads to keep production crashes debuggable.",
             "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, enabling feature teams to ship consistent motion without touching native code.",
+            "Mentored **4 engineers** across mobile and web through code review, set the engineering standards both codebases follow, and partnered with founders on scope and prioritisation.",
           ],
         },
         {
@@ -141,8 +134,8 @@ export const DATA = {
           start: "Feb 2022",
           end: "Oct 2024",
           bullets: [
-            "Built the core prepaid-card and savings flows in React Native on Hermes with Redux, establishing the state and navigation architecture the app still runs on today.",
-            "Hardened the app lifecycle for fintech edge cases — re-authentication after backgrounding, force-update and maintenance gates, and deep links queued through PIN verification rather than dropped.",
+            "Built the core prepaid-card and savings flows in React Native with Redux on Hermes, establishing the state and navigation architecture the app still runs on.",
+            "Hardened the app lifecycle for fintech edge cases, including re-authentication after backgrounding, force-update and maintenance gates, and deep links held through PIN verification rather than dropped.",
           ],
         },
       ],
@@ -150,6 +143,9 @@ export const DATA = {
     {
       company: "National Finance Olympiad",
       badges: ["Powered by Streak"],
+      // Shown under the company heading so the overlapping dates read as one
+      // employer's two products, not two simultaneous full-time jobs.
+      note: "Streak's financial education product — built and owned alongside the mobile role above.",
       href: "https://nationalfinanceolympiad.com/",
       location: "Bengaluru, Karnataka",
       title: "Senior Frontend Developer",
@@ -164,11 +160,10 @@ export const DATA = {
           start: "Mar 2024",
           end: "Present",
           bullets: [
-            "Led the student portal's React-to-Next.js migration on a written decision record and runbook with a rollback path, cutting first contentful paint from 3.2s to 0.8s with zero downtime at cutover.",
-            "Designed the Postgres/Supabase schemas and server-side payment verification across 4 gateways, validating every transaction against the gateway rather than trusting client-side success callbacks.",
-            "Built the attribution and analytics infrastructure end to end — multi-pixel Meta CAPI on Django/GCP with cross-subdomain session stitching, and a WebEngage migration onto CUID identity resolution across a two-brand unification — moving conversion signal server-side with campaign history intact.",
-            "Built a RAG adaptive learning platform on pgvector and the Claude API, keeping embeddings in the existing Postgres rather than running a second datastore — A/B tested with 500 students.",
-            "Shipped a LangGraph multi-agent pipeline for question-paper generation, separating generation, verification, and difficulty balancing so every paper is machine-checked before release — 50 papers in production.",
+            "Led the student portal's React-to-Next.js migration on a documented runbook and rollback path, cutting first contentful paint from **3.2s** to **0.8s** with zero downtime at cutover.",
+            "Designed the Postgres/Supabase schemas and server-side verification for **4 payment gateways**, validating every transaction against the gateway instead of client-side success callbacks.",
+            "Built server-side attribution end to end — Meta CAPI on Django/GCP with cross-subdomain session stitching, and a WebEngage migration onto CUID identity resolution across a two-brand unification.",
+            "Built a RAG adaptive learning platform on pgvector and the Claude API, and a LangGraph multi-agent pipeline for question-paper generation — A/B tested with **500 students**, **50 papers** in production.",
           ],
         },
         {
@@ -176,9 +171,8 @@ export const DATA = {
           start: "Feb 2022",
           end: "Mar 2024",
           bullets: [
-            "Built the web ecosystem from scratch — student, teacher, and admin portals plus two checkout surfaces, now serving 500+ schools and 10,000+ students.",
-            "Architected a Turborepo monorepo housing 3 checkout apps on shared payment infrastructure, so a gateway change shipped once instead of three times, instrumented with A/B testing and GA4 conversion tracking.",
-            "Integrated Razorpay, Stripe, and BillDesk with retry logic and reconciliation across UPI, cards, net banking, and international payments, on layouts targeting the low-end Android devices most students sit exams on.",
+            "Built the web ecosystem from scratch — student, teacher, and admin portals plus two checkout surfaces, now serving **500+ schools** and **10,000+ students**.",
+            "Architected a Turborepo monorepo with 3 checkout apps on shared Razorpay, Stripe, and BillDesk infrastructure, so a gateway change shipped once instead of three times.",
           ],
         },
       ],
