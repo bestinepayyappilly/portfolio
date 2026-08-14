@@ -145,7 +145,7 @@ export const DATA = {
       badges: ["Powered by Streak"],
       // Shown under the company heading so the overlapping dates read as one
       // employer's two products, not two simultaneous full-time jobs.
-      note: "Streak's financial education product — built and owned alongside the mobile role above.",
+      note: "Streak's financial education product — built and owned alongside the Streak mobile role, not a separate employer.",
       href: "https://nationalfinanceolympiad.com/",
       location: "Bengaluru, Karnataka",
       title: "Senior Frontend Developer",

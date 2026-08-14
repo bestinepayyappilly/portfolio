@@ -8,8 +8,12 @@ import {
   Svg,
   Path,
 } from "@react-pdf/renderer";
-import { DATA } from "@/data/resume";
 import { splitBoldSegments } from "@/lib/bold-text";
+import {
+  RESUME_VARIANTS,
+  orderedWork,
+  type VariantSlug,
+} from "@/data/resume-variants";
 
 const APPLE_LOGO_PATH =
   "M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.417-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701";
@@ -117,6 +121,7 @@ const s = StyleSheet.create({
   bold: { fontFamily: "Helvetica-Bold", color: c.black },
   projectRow: { marginBottom: 7 },
   projectHead: { flexDirection: "row", alignItems: "center", gap: 4 },
+  projectName: { fontSize: 10.5, fontWeight: 700, color: c.black },
   projectNameLink: {
     fontSize: 10.5,
     fontWeight: 700,
@@ -128,11 +133,6 @@ const s = StyleSheet.create({
   eduText: { fontSize: 10, color: c.body },
   eduDate: { fontSize: 9, color: c.light },
 });
-
-const BAKI_APP_STORE_URL =
-  DATA.projects.find((p) => p.title === "Baki")?.href ?? DATA.url;
-const WOTTER_APP_STORE_URL =
-  DATA.projects.find((p) => p.title === "Wotter")?.href ?? DATA.url;
 
 function InlineText({
   text,
@@ -177,17 +177,23 @@ function AppleMark() {
   );
 }
 
-export function ResumePDF() {
+export function ResumePDF({
+  variant = "mobile",
+}: {
+  variant?: VariantSlug;
+}) {
+  const v = RESUME_VARIANTS[variant];
+  const work = orderedWork(v);
   return (
     <Document
-      title="Bestine Payyappilly — Resume"
+      title={`Bestine Payyappilly — ${v.label} Resume`}
       author="Bestine Payyappilly"
-      subject={DATA.headline}
+      subject={v.headline}
     >
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <Text style={s.name}>Bestine Payyappilly</Text>
-          <Text style={s.subtitle}>{DATA.headline}</Text>
+          <Text style={s.subtitle}>{v.headline}</Text>
           <View style={s.contactRow}>
             <Text style={s.contactText}>Bangalore, India</Text>
             <Text style={s.sep}>|</Text>
@@ -219,12 +225,12 @@ export function ResumePDF() {
 
         <View style={s.section}>
           <SectionTitle>Summary</SectionTitle>
-          <InlineText text={DATA.summary} style={s.summaryText} />
+          <InlineText text={v.summary} style={s.summaryText} />
         </View>
 
         <View style={s.section}>
           <SectionTitle>Core Technical Expertise</SectionTitle>
-          {DATA.expertise.map((group) => (
+          {v.expertise.map((group) => (
             <View key={group.label} style={s.skillRow} wrap={false}>
               <Text style={s.skillLabel}>{group.label}</Text>
               <Text style={s.skillText}>{group.items}</Text>
@@ -234,7 +240,7 @@ export function ResumePDF() {
 
         <View style={s.section}>
           <SectionTitle>Professional Experience</SectionTitle>
-          {DATA.work.map((job) => {
+          {work.map((job) => {
             const [firstRole, ...restRoles] = job.roles;
             const [firstBullet, ...restBullets] = firstRole.bullets;
             return (
@@ -284,33 +290,22 @@ export function ResumePDF() {
         <View style={s.section}>
           <SectionTitle>Personal Projects</SectionTitle>
 
-          <View style={s.projectRow} wrap={false}>
-            <View style={s.projectHead}>
-              <AppleMark />
-              <Link src={BAKI_APP_STORE_URL} style={s.projectNameLink}>
-                Baki — Live on the App Store
-              </Link>
+          {v.projects.map((project) => (
+            <View key={project.name} style={s.projectRow} wrap={false}>
+              <View style={s.projectHead}>
+                {project.appStore && <AppleMark />}
+                {project.href ? (
+                  <Link src={project.href} style={s.projectNameLink}>
+                    {project.name}
+                    {project.appStore ? " — Live on the App Store" : ""}
+                  </Link>
+                ) : (
+                  <Text style={s.projectName}>{project.name}</Text>
+                )}
+              </View>
+              <Text style={s.projectDesc}>{project.description}</Text>
             </View>
-            <Text style={s.projectDesc}>
-              Designed, built, and shipped solo — commitment-first budgeting
-              that shows real available balance before you spend, with
-              five-mode expense splitting and a paid subscription tier.
-            </Text>
-          </View>
-
-          <View style={s.projectRow} wrap={false}>
-            <View style={s.projectHead}>
-              <AppleMark />
-              <Link src={WOTTER_APP_STORE_URL} style={s.projectNameLink}>
-                Wotter — Live on the App Store
-              </Link>
-            </View>
-            <Text style={s.projectDesc}>
-              Sole engineer, partnered with a designer — hydration tracking
-              with onboarding, local notification reminders, and subscription
-              management.
-            </Text>
-          </View>
+          ))}
         </View>
 
         <View style={s.section}>
