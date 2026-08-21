@@ -191,6 +191,34 @@ export const DATA = {
   ],
   projects: [
     {
+      title: "Synqed",
+      href: "https://synqed.studio",
+      dates: "2026",
+      active: true,
+      description:
+        "Android \u2194 Mac continuity for people who carry an Android phone and work on a Mac. Calls, SMS, notifications, clipboard and file transfer move between the two over an AES-256-GCM encrypted LAN tunnel \u2014 no cloud, no account, no relay. Native Kotlin on Android and Swift on macOS, with a menu-bar popover, notch drop zone, call banners, a remote file browser with resumable transfers, and an on-device Apple Intelligence notification digest.",
+      technologies: [
+        "Kotlin",
+        "Jetpack Compose",
+        "Swift",
+        "SwiftUI",
+        "Network.framework",
+        "AES-256-GCM",
+        "ECDH",
+        "Apple Intelligence",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://synqed.studio",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "/synqed/banner.png",
+      video: "",
+      blogs: [],
+    },
+    {
       title: "Baki",
       href: "https://apps.apple.com/in/app/baki-budget-expense-tracker/id6760950323",
       dates: "2025",
