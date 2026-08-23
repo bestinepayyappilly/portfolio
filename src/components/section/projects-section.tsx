@@ -63,8 +63,8 @@ export default function ProjectsSection() {
               work
             </h2>
             <p className="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed text-balance text-center">
-              I&apos;ve worked on a variety of projects, from simple websites to
-              complex web applications. Here are a few of my favorites.
+              Mobile apps, web platforms, and the backends behind them. Here are
+              a few I like most.
             </p>
           </div>
         </div>

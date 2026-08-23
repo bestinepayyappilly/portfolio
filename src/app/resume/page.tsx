@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Resume",
-  description: `${DATA.name} — ${RESUME_VARIANTS.mobile.headline}. Resume and work experience.`,
+  description: `${DATA.name}, ${RESUME_VARIANTS.mobile.headline}. Resume and work experience.`,
   alternates: {
     canonical: `${DATA.url}/resume`,
   },

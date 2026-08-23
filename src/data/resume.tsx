@@ -23,7 +23,7 @@ export const DATA = {
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description: `${HEADLINE}. I build the mobile app, the web platform, and the backend behind them.`,
   summary:
-    "Senior Mobile Engineer with ~5 years building production iOS and Android apps in React Native, Swift, and Kotlin. Sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, owning mobile architecture, on-device payment encryption, security hardening, release engineering, and on-call. Experienced in shipping financial products end to end, with additional product engineering depth across Next.js, Django, payments, and production AI systems.",
+    "Senior Mobile Engineer with ~5 years building production iOS and Android apps in React Native, Swift, and Kotlin. Sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, owning mobile architecture, on-device payment encryption, security hardening, release engineering, and on-call. I ship financial products end to end, and I work across Next.js, Django, payments, and production AI systems.",
   avatarUrl: "/me.webp",
   skills: [
     { name: "React Native", icon: ReactLight },
@@ -106,72 +106,63 @@ export const DATA = {
     {
       company: "Streak",
       badges: ["YC W22"],
+      // One employer, one timeline: National Finance Olympiad is Streak's
+      // education product, so its roles sit here rather than reading as a
+      // second, simultaneous full-time job.
+      note: "National Finance Olympiad is Streak's financial education product, so the web roles below sat inside the same company as the mobile work.",
       href: "https://streakcard.com/",
       location: "Bengaluru, Karnataka",
-      title: "Senior Mobile Developer",
+      title: "Senior Mobile & Frontend Developer",
       logoUrl: "/StreakLogo.webp",
       start: "Feb 2022",
-      end: "Jan 2026",
+      end: "Present",
       description:
-        "Teen fintech app on iOS and Android — prepaid card, savings, fixed deposits, and gold investing. Joined as a mobile developer and grew into the role of sole mobile architect.",
+        "YC-backed teen fintech. The app covers prepaid cards, savings, fixed deposits, and gold investing on iOS and Android, and the company also runs National Finance Olympiad, its financial education platform. I joined as a mobile developer, became the sole mobile architect, and owned the NFO web platform alongside that.",
       roles: [
         {
+          track: "mobile",
           title: "Senior Mobile Developer",
           start: "Oct 2024",
           end: "Jan 2026",
           bullets: [
-            "Owned mobile architecture, release engineering, and on-call as sole mobile architect for a teen fintech app on iOS and Android — **500k+ downloads**.",
-            "Designed and shipped custom Swift and Kotlin native modules for ECDH key exchange (prime256v1) and AES encryption, moving card-transaction crypto on-device and out of the JS bundle.",
-            "Hardened the app against mobile threats — root/jailbreak detection, runtime protection, SSL pinning, biometric authentication, encrypted storage and payloads, and release-build hardening.",
-            "Delivered a Fixed Deposits product solo end to end and redesigned the gold investment flow around pre-calculated return projections, making expected outcomes easier to understand before investing.",
-            "Improved hotfix turnaround by implementing CodePush OTA updates checked on app resume, and automated Sentry source-map uploads to keep production crashes debuggable.",
-            "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, enabling feature teams to ship consistent motion without touching native code.",
+            "Owned mobile architecture, release engineering, and on-call as sole mobile architect for a teen fintech app on iOS and Android with **500k+ downloads**.",
+            "Designed and shipped custom Swift and Kotlin native modules for ECDH key exchange (prime256v1) and AES encryption, which moved card-transaction crypto on-device and out of the JS bundle.",
+            "Hardened the app against mobile threats with root and jailbreak detection, runtime protection, SSL pinning, biometric authentication, encrypted storage and payloads, and locked-down release builds.",
+            "Delivered a Fixed Deposits product solo end to end and rebuilt the gold investment flow around pre-calculated return projections, so users can see the expected return before they invest.",
+            "Cut hotfix turnaround with CodePush OTA updates checked on app resume, and automated Sentry source-map uploads so production crashes stay debuggable.",
+            "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, so feature teams could ship consistent motion without touching native code.",
             "Mentored **4 engineers** across mobile and web through code review, set the engineering standards both codebases follow, and partnered with founders on scope and prioritisation.",
           ],
         },
         {
+          track: "mobile",
           title: "Mobile Developer",
           start: "Feb 2022",
           end: "Oct 2024",
           bullets: [
-            "Built the core prepaid-card and savings flows in React Native with Redux on Hermes, establishing the state and navigation architecture the app still runs on.",
-            "Hardened the app lifecycle for fintech edge cases, including re-authentication after backgrounding, force-update and maintenance gates, and deep links held through PIN verification rather than dropped.",
+            "Built the core prepaid-card and savings flows in React Native with Redux on Hermes. The state and navigation architecture from that work still runs the app.",
+            "Handled the fintech lifecycle edge cases: re-authentication after backgrounding, force-update and maintenance gates, and deep links that survive PIN verification instead of being dropped.",
           ],
         },
-      ],
-    },
-    {
-      company: "National Finance Olympiad",
-      badges: ["Powered by Streak"],
-      // Shown under the company heading so the overlapping dates read as one
-      // employer's two products, not two simultaneous full-time jobs.
-      note: "Streak's financial education product — built and owned alongside the Streak mobile role, not a separate employer.",
-      href: "https://nationalfinanceolympiad.com/",
-      location: "Bengaluru, Karnataka",
-      title: "Senior Frontend Developer",
-      logoUrl: "/NFOLogo.svg",
-      start: "Feb 2022",
-      end: "Present",
-      description:
-        "Streak's financial education arm, built by the same team and run alongside my mobile work at Streak. Owned the web platform end to end — frontend, Django/GCP services, Postgres schema design, payments, growth instrumentation, and the LLM pipelines behind adaptive learning and question-paper generation.",
-      roles: [
         {
-          title: "Senior Frontend Developer",
+          track: "frontend",
+          title: "Senior Frontend Developer (National Finance Olympiad)",
           start: "Mar 2024",
           end: "Present",
           bullets: [
-            "Led the student portal's React-to-Next.js migration on a documented runbook and rollback path, cutting first contentful paint from **3.2s** to **0.8s** with zero downtime at cutover.",
-            "Designed the Postgres/Supabase schemas and server-side verification for **4 payment gateways**, validating every transaction against the gateway instead of client-side success callbacks.",
-            "Built server-side attribution end to end — Meta CAPI on Django/GCP with cross-subdomain session stitching, and a WebEngage migration onto CUID identity resolution across a two-brand unification.",
-            "Built a RAG adaptive learning platform on pgvector and the Claude API, and a LangGraph multi-agent pipeline for question-paper generation — A/B tested with **500 students**, **50 papers** in production.",
+            "Led the student portal's React to Next.js migration on a documented runbook and rollback path. First contentful paint went from **3.2s** to **0.8s**, with no downtime at cutover.",
+            "Designed the Postgres/Supabase schemas and server-side verification for **4 payment gateways**. Every transaction is checked against the gateway instead of a client-side success callback.",
+            "Built server-side attribution end to end: Meta CAPI on Django and GCP with cross-subdomain session stitching, plus a WebEngage migration onto CUID identity resolution while two brands merged.",
+            "Built a RAG adaptive learning platform on pgvector and the Claude API, plus a LangGraph multi-agent pipeline for question-paper generation. A/B tested with **500 students**, and **50 papers** are in production.",
           ],
         },
         {
-          title: "Frontend Developer",
+          track: "frontend",
+          title: "Frontend Developer (National Finance Olympiad)",
           start: "Feb 2022",
           end: "Mar 2024",
           bullets: [
-            "Built the web ecosystem from scratch — student, teacher, and admin portals plus two checkout surfaces, now serving **500+ schools** and **10,000+ students**.",
+            "Built the web ecosystem from scratch: student, teacher, and admin portals plus two checkout surfaces. It now serves **500+ schools** and **10,000+ students**.",
             "Architected a Turborepo monorepo with 3 checkout apps on shared Razorpay, Stripe, and BillDesk infrastructure, so a gateway change shipped once instead of three times.",
           ],
         },
@@ -196,7 +187,7 @@ export const DATA = {
       dates: "2026",
       active: true,
       description:
-        "Android \u2194 Mac continuity for people who carry an Android phone and work on a Mac. Calls, SMS, notifications, clipboard and file transfer move between the two over an AES-256-GCM encrypted LAN tunnel \u2014 no cloud, no account, no relay. Native Kotlin on Android and Swift on macOS, with a menu-bar popover, notch drop zone, call banners, a remote file browser with resumable transfers, and an on-device Apple Intelligence notification digest.",
+        "Continuity for people who carry an Android phone and work on a Mac. Calls, SMS, notifications, clipboard, and file transfer move between the two over an AES-256-GCM encrypted tunnel on your own Wi-Fi, with no cloud, account, or relay in the path. Native Kotlin on Android and Swift on macOS, with a menu-bar popover, a notch drop zone, call banners, a remote file browser with resumable transfers, and a notification digest that runs on-device through Apple Intelligence.",
       technologies: [
         "Kotlin",
         "Jetpack Compose",
@@ -224,7 +215,7 @@ export const DATA = {
       dates: "2025",
       active: true,
       description:
-        "Shipped and live on the App Store. A commitment-first budgeting app for iOS that shows your real available balance — salary minus locked commitments minus spending — before you spend. Built solo on bare React Native 0.84, Supabase, and RevenueCat, with a full split-expense system, animated mesh gradients, shared element transitions, AI-powered trip planning, and a paid Pro tier with Weave spreadsheet sync.",
+        "Shipped and live on the App Store. A commitment-first budgeting app for iOS that shows your real available balance (salary minus locked commitments minus spending) before you spend. Built solo on bare React Native 0.84, Supabase, and RevenueCat, with a full split-expense system, animated mesh gradients, shared element transitions, AI trip planning, and a paid Pro tier with Weave spreadsheet sync.",
       technologies: [
         "React Native",
         "TypeScript",
@@ -269,7 +260,7 @@ export const DATA = {
       dates: "2022 - 2024",
       active: false,
       description:
-        "A React Native fintech app for teenagers — prepaid card, savings, gold investing, and gamification. Built with 7-layer security (FreeRASP, SSL pinning, ECDH encryption via custom native modules), 5 animation systems (Reanimated, Lottie, Rive, Skia), and instant OTA updates via CodePush.",
+        "A React Native fintech app for teenagers: prepaid card, savings, gold investing, and gamification. Built with 7-layer security (FreeRASP, SSL pinning, ECDH encryption via custom native modules), 5 animation systems (Reanimated, Lottie, Rive, Skia), and instant OTA updates via CodePush.",
       technologies: [
         "React Native",
         "TypeScript",
@@ -302,7 +293,7 @@ export const DATA = {
       dates: "2025",
       active: true,
       description:
-        "A full-stack e-commerce platform for premium health-focused food products. Features a multi-step checkout flow, Razorpay payment integration (UPI, Cards, Net Banking, Wallets), real-time cart management, and OTP-based phone verification with secure PostgreSQL database design.",
+        "A full-stack e-commerce platform for health food products. It has a multi-step checkout, Razorpay payments across UPI, cards, net banking, and wallets, real-time cart management, and OTP phone verification on a PostgreSQL schema.",
       technologies: [
         "React 19",
         "Vite",
@@ -326,7 +317,7 @@ export const DATA = {
       dates: "2024",
       active: true,
       description:
-        "A cross-platform iOS & Android hydration tracking app built with React Native and TypeScript. Features multi-step onboarding, dashboard with metrics and drink tracking, customizable reminders with local push notifications, subscription management, and water intake calculation logic.",
+        "A hydration tracking app for iOS and Android, built with React Native and TypeScript. It has multi-step onboarding, a dashboard for metrics and drink tracking, customizable reminders on local push notifications, subscription management, and the intake calculation behind the targets.",
       technologies: [
         "React Native",
         "TypeScript",
@@ -360,7 +351,7 @@ export const DATA = {
       dates: "2022 - Present",
       active: true,
       description:
-        "A monorepo containing 3 production checkout apps (NFO Books, NFO Registration, NFA Checkout) built with Turborepo. Features multi-payment gateway integration (Razorpay, BillDesk, Stripe), A/B testing framework with GA4, OTP verification, and dynamic pricing with bundle discounts and COD support.",
+        "A Turborepo monorepo holding 3 production checkout apps: NFO Books, NFO Registration, and NFA Checkout. It integrates Razorpay, BillDesk, and Stripe, with an A/B testing framework on GA4, OTP verification, and dynamic pricing that covers bundle discounts and cash on delivery.",
       technologies: [
         "React 18",
         "TypeScript",
@@ -384,7 +375,7 @@ export const DATA = {
       dates: "2022 - Present",
       active: true,
       description:
-        "A full-featured student portal for National Finance Olympiad. Built from scratch and migrated from React to Next.js. Includes self-learning checkout, books checkout, complete student dashboard, and integrated payment flows with Razorpay, Stripe, and BillDesk.",
+        "The student portal for National Finance Olympiad, built from scratch and later migrated from React to Next.js. It covers self-learning checkout, books checkout, the student dashboard, and payment flows on Razorpay, Stripe, and BillDesk.",
       technologies: [
         "Next.js",
         "React",

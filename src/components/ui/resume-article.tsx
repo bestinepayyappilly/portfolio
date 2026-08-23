@@ -140,6 +140,9 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
             <p className="text-sm! mt-0!">
               {job.start} – {job.end} &middot; {job.location}
             </p>
+            {"note" in job && job.note && (
+              <p className="text-sm! italic mt-0!">{job.note}</p>
+            )}
             <p className="text-sm!">{job.description}</p>
             {job.roles.map((role) => (
               <div key={role.title + role.start}>
@@ -197,7 +200,7 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
 
         <h2>Education</h2>
         <p>
-          <strong>SRM University</strong> — B.Tech, Electronics &amp;
+          <strong>SRM University</strong>, B.Tech, Electronics &amp;
           Communication Engineering &middot; 2022
         </p>
       </article>

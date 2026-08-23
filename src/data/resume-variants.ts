@@ -7,6 +7,9 @@ import { DATA } from "@/data/resume";
  */
 export type VariantSlug = "mobile" | "frontend";
 
+/** Which body of work a role belongs to — see `track` on DATA.work[].roles */
+export type RoleTrack = "mobile" | "frontend";
+
 export type ResumeProject = {
   name: string;
   /** Omitted when the project has no public URL — rendered as plain text */
@@ -22,8 +25,12 @@ export type ResumeVariant = {
   headline: string;
   summary: string;
   expertise: ReadonlyArray<{ label: string; items: string }>;
-  /** Company names in the order they should appear, most relevant first */
-  companyOrder: ReadonlyArray<string>;
+  /**
+   * Role tracks in the order they should appear within a company, most relevant
+   * first. Both tracks ran at the same employer, so the variant picks which one
+   * the reader sees at the top rather than reordering companies.
+   */
+  trackOrder: ReadonlyArray<RoleTrack>;
   projects: ReadonlyArray<ResumeProject>;
   fileName: string;
 };
@@ -39,7 +46,7 @@ const BAKI: ResumeProject = {
   href: projectHref("Baki"),
   appStore: true,
   description:
-    "Designed, built, and shipped solo — commitment-first budgeting that shows real available balance before you spend, with five-mode expense splitting and a paid subscription tier.",
+    "Designed, built, and shipped solo. Commitment-first budgeting that shows your real available balance before you spend, with five-mode expense splitting and a paid subscription tier.",
 };
 
 const WOTTER: ResumeProject = {
@@ -47,7 +54,7 @@ const WOTTER: ResumeProject = {
   href: projectHref("Wotter"),
   appStore: true,
   description:
-    "Sole engineer, partnered with a designer — hydration tracking with onboarding, local notification reminders, and subscription management.",
+    "Sole engineer, working with a designer. Hydration tracking with onboarding, local notification reminders, and subscription management.",
 };
 
 const THIRDMEAL: ResumeProject = {
@@ -55,7 +62,7 @@ const THIRDMEAL: ResumeProject = {
   href: projectHref("ThirdMeal"),
   appStore: false,
   description:
-    "Full-stack e-commerce build — multi-step checkout on Razorpay across UPI, cards, net banking, and wallets, with OTP phone verification on a Postgres schema.",
+    "Full-stack e-commerce build: multi-step checkout on Razorpay across UPI, cards, net banking, and wallets, with OTP phone verification on a Postgres schema.",
 };
 
 export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
@@ -65,7 +72,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     headline: DATA.headline,
     summary: DATA.summary,
     expertise: DATA.expertise,
-    companyOrder: ["Streak", "National Finance Olympiad"],
+    trackOrder: ["mobile", "frontend"],
     projects: [BAKI, WOTTER],
     fileName: "Bestine_Payyappilly_Mobile_Engineer.pdf",
   },
@@ -74,7 +81,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     label: "Frontend Developer",
     headline: "Senior Frontend Developer | React, Next.js & TypeScript",
     summary:
-      "Senior Frontend Developer with ~5 years building production web products in React, Next.js, and TypeScript. Owned a financial education platform end to end — student, teacher, and admin portals plus checkout, now serving **500+ schools** and **10,000+ students** — including a React-to-Next.js migration that cut first contentful paint from **3.2s** to **0.8s** with zero downtime. Also sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, with backend depth across Django, Postgres, payments, and production AI systems.",
+      "Senior Frontend Developer with ~5 years building production web products in React, Next.js, and TypeScript. I owned a financial education platform end to end: student, teacher, and admin portals plus checkout, now serving **500+ schools** and **10,000+ students**. That included a React to Next.js migration that cut first contentful paint from **3.2s** to **0.8s** with no downtime. I am also the sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, and I work on the backend across Django, Postgres, payments, and production AI systems.",
     expertise: [
       {
         label: "Core Frontend",
@@ -102,17 +109,23 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
       },
       { label: "AI / LLM", items: "Claude API, RAG, pgvector, LangGraph" },
     ],
-    companyOrder: ["National Finance Olympiad", "Streak"],
+    trackOrder: ["frontend", "mobile"],
     projects: [BAKI, THIRDMEAL],
     fileName: "Bestine_Payyappilly_Frontend_Developer.pdf",
   },
 };
 
-/** DATA.work ordered for the given variant */
+/**
+ * DATA.work with each company's roles ordered for the given variant. The sort is
+ * stable, so roles stay newest-first within their own track.
+ */
 export function orderedWork(variant: ResumeVariant) {
-  return [...DATA.work].sort(
-    (a, b) =>
-      variant.companyOrder.indexOf(a.company) -
-      variant.companyOrder.indexOf(b.company),
-  );
+  return DATA.work.map((job) => ({
+    ...job,
+    roles: [...job.roles].sort(
+      (a, b) =>
+        variant.trackOrder.indexOf(a.track) -
+        variant.trackOrder.indexOf(b.track),
+    ),
+  }));
 }

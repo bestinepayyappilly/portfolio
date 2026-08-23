@@ -21,7 +21,7 @@ export default function HackathonsSection() {
             <p className="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed text-balance text-center">
               During my time in university, I attended {DATA.hackathons.length}+
               hackathons. People from around the country would come together and
-              build incredible things in 2-3 days. It was eye-opening to see the endless possibilities brought to life by a group of motivated and passionate individuals.
+              build incredible things in 2-3 days. It was eye-opening to watch what a motivated group could put together in a weekend.
             </p>
           </div>
         </div>
