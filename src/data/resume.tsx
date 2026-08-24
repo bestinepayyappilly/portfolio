@@ -146,7 +146,7 @@ export const DATA = {
         },
         {
           track: "frontend",
-          title: "Senior Frontend Developer (National Finance Olympiad)",
+          title: "Senior Frontend Developer",
           start: "Mar 2024",
           end: "Present",
           bullets: [
@@ -158,7 +158,7 @@ export const DATA = {
         },
         {
           track: "frontend",
-          title: "Frontend Developer (National Finance Olympiad)",
+          title: "Frontend Developer",
           start: "Feb 2022",
           end: "Mar 2024",
           bullets: [
