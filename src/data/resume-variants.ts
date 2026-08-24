@@ -177,7 +177,6 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     ],
     // The web platform is the stronger product story, so it leads here.
     trackOrder: ["frontend", "mobile"],
-    collapseRolesAs: "Senior Frontend Developer",
     projects: [SYNQED, BAKI],
     fileName: "Bestine_Payyappilly_Product_Engineer.pdf",
   },
