@@ -136,7 +136,7 @@ export const DATA = {
             },
             {
               track: "frontend",
-              text: "Built a RAG adaptive learning platform on pgvector and the Claude API, plus a LangGraph multi-agent pipeline for question-paper generation. A/B tested with **500 students**, and **50 papers** are in production.",
+              text: "Built a **RAG adaptive learning platform on pgvector and the Claude API**, plus a **LangGraph multi-agent pipeline** for question-paper generation. A/B tested with **500 students**, and **50 papers** are in production.",
             },
             {
               track: "mobile",
