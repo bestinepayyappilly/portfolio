@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 const VARIANT_PATH: Record<VariantSlug, string> = {
   mobile: "/resume",
   frontend: "/resume/frontend",
+  product: "/resume/product",
 };
 
 function VariantSwitcher({ active }: { active: VariantSlug }) {
