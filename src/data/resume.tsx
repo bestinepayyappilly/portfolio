@@ -23,7 +23,7 @@ export const DATA = {
   locationLink: "https://www.google.com/maps/place/Bangalore",
   description: `${HEADLINE}. I build the mobile app, the web platform, and the backend behind them.`,
   summary:
-    "Senior Mobile Engineer with ~5 years building production iOS and Android apps in React Native, Swift, and Kotlin. Sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, owning mobile architecture, on-device payment encryption, security hardening, release engineering, and on-call. I ship financial products end to end, and I work across Next.js, Django, payments, and production AI systems.",
+    "Senior Mobile Engineer with ~5 years building production iOS and Android apps in React Native, Swift, and Kotlin. Sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, owning mobile architecture, on-device payment encryption, security hardening, release engineering, and on-call. I ship financial products end to end, and I work across Next.js, Django, payments, and production agentic systems.",
   avatarUrl: "/me.webp",
   skills: [
     { name: "React Native", icon: ReactLight },

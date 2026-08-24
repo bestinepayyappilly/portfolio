@@ -110,7 +110,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     label: "Frontend Developer",
     headline: "Senior Frontend Developer | React, Next.js & TypeScript",
     summary:
-      "Senior Frontend Developer with ~5 years building production web products in React, Next.js, and TypeScript. I owned a financial education platform end to end: student, teacher, and admin portals plus checkout, now serving **500+ schools** and **100,000 participants**. That included a React to Next.js migration that cut first contentful paint from **3.2s** to **0.8s** with no downtime. I am also the sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, and I work on the backend across Django, Postgres, payments, and production AI systems.",
+      "Senior Frontend Developer with ~5 years building production web products in React, Next.js, and TypeScript. I owned a financial education platform end to end: student, teacher, and admin portals plus checkout, now serving **500+ schools** and **100,000 participants**. That included a React to Next.js migration that cut first contentful paint from **3.2s** to **0.8s** with no downtime. I am also the sole mobile architect for a YC-backed teen fintech app with **500k+ downloads**, and I work on the backend across Django, Postgres, payments, and production agentic systems.",
     expertise: [
       {
         label: "Core Frontend",
@@ -147,7 +147,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
   product: {
     slug: "product",
     label: "Product Engineer",
-    headline: "Product Engineer | Next.js, TypeScript & Production AI Systems",
+    headline: "Product Engineer | Next.js, TypeScript & Production Agentic Systems",
     summary:
       "Product Engineer with ~5 years **shipping consumer products end to end**: the interface, the API behind it, the payments inside it, and the release that ships it. At Streak (YC W22) I was **sole mobile architect** for a teen fintech app with **500k+ downloads** on iOS and Android, owning **architecture, release engineering, and on-call** across React Native, Swift, and Kotlin, mentoring **4 engineers**, and working with the founders on what to build next. I also **built and own** the education platform the business runs on, taking it from **zero to 500+ schools** and **100,000 participants**: a React to Next.js migration run on a documented runbook and rollback path with **no downtime at cutover**, checkout across **4 payment gateways** verified **server-side** instead of trusting client callbacks, and **production AI on the Claude API** with RAG on pgvector and a LangGraph multi-agent pipeline, A/B tested with **500 students**. On my own I **designed and shipped Synqed**, an Android to Mac continuity app in Kotlin and Swift that keeps notifications, files, and calls on an **encrypted link over your own Wi-Fi**, with **no cloud or account** behind it. Based in Bangalore.",
     expertise: [
