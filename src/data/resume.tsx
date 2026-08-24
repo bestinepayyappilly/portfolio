@@ -106,64 +106,89 @@ export const DATA = {
     {
       company: "Streak",
       badges: ["YC W22"],
-      // One employer, one timeline: National Finance Olympiad is Streak's
-      // education product, so its roles sit here rather than reading as a
-      // second, simultaneous full-time job.
-      note: "National Finance Olympiad is Streak's financial education product, so the web work below sat inside the same company as the mobile work.",
       href: "https://streakcard.com/",
       location: "Bengaluru, Karnataka",
-      title: "Senior Mobile & Frontend Developer",
+      title: "Senior Frontend Developer",
       logoUrl: "/StreakLogo.webp",
       start: "Feb 2022",
       end: "Present",
       description:
-        "YC-backed teen fintech. The app covers prepaid cards, savings, fixed deposits, and gold investing on iOS and Android, and the company also runs National Finance Olympiad, its financial education platform. I joined as a mobile developer, became the sole mobile architect, and owned the NFO web platform alongside that.",
+        "YC-backed teen fintech: prepaid cards, savings, fixed deposits, and gold investing on iOS and Android, plus the web platform the business runs on. I own the web platform end to end and was the sole mobile architect for the apps.",
+      // Two roles, one progression. Mobile work is tagged per bullet so a
+      // variant can lead with it without splitting the timeline in two.
       roles: [
         {
-          track: "mobile",
-          title: "Senior Mobile Developer",
-          start: "Oct 2024",
-          end: "Jan 2026",
-          bullets: [
-            "Owned mobile architecture, release engineering, and on-call as sole mobile architect for a teen fintech app on iOS and Android with **500k+ downloads**.",
-            "Designed and shipped custom Swift and Kotlin native modules for ECDH key exchange (prime256v1) and AES encryption, which moved card-transaction crypto on-device and out of the JS bundle.",
-            "Hardened the app against mobile threats with root and jailbreak detection, runtime protection, SSL pinning, biometric authentication, encrypted storage and payloads, and locked-down release builds.",
-            "Delivered a Fixed Deposits product solo end to end and rebuilt the gold investment flow around pre-calculated return projections, so users can see the expected return before they invest.",
-            "Cut hotfix turnaround with CodePush OTA updates checked on app resume, and automated Sentry source-map uploads so production crashes stay debuggable.",
-            "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, so feature teams could ship consistent motion without touching native code.",
-            "Mentored **4 engineers** across mobile and web through code review, set the engineering standards both codebases follow, and partnered with founders on scope and prioritisation.",
-          ],
-        },
-        {
-          track: "mobile",
-          title: "Mobile Developer",
-          start: "Feb 2022",
-          end: "Oct 2024",
-          bullets: [
-            "Built the core prepaid-card and savings flows in React Native with Redux on Hermes. The state and navigation architecture from that work still runs the app.",
-            "Handled the fintech lifecycle edge cases: re-authentication after backgrounding, force-update and maintenance gates, and deep links that survive PIN verification instead of being dropped.",
-          ],
-        },
-        {
-          track: "frontend",
           title: "Senior Frontend Developer",
           start: "Mar 2024",
           end: "Present",
           bullets: [
-            "Led the student portal's React to Next.js migration on a documented runbook and rollback path. First contentful paint went from **3.2s** to **0.8s**, with no downtime at cutover.",
-            "Designed the Postgres/Supabase schemas and server-side verification for **4 payment gateways**. Every transaction is checked against the gateway instead of a client-side success callback.",
-            "Built server-side attribution end to end: Meta CAPI on Django and GCP with cross-subdomain session stitching, plus a WebEngage migration onto CUID identity resolution while two brands merged.",
-            "Built a RAG adaptive learning platform on pgvector and the Claude API, plus a LangGraph multi-agent pipeline for question-paper generation. A/B tested with **500 students**, and **50 papers** are in production.",
+            {
+              track: "frontend",
+              text: "Led the student portal's React to Next.js migration on a documented runbook and rollback path. First contentful paint went from **3.2s** to **0.8s**, with no downtime at cutover.",
+            },
+            {
+              track: "frontend",
+              text: "Designed the Postgres/Supabase schemas and server-side verification for **4 payment gateways**. Every transaction is checked against the gateway instead of a client-side success callback.",
+            },
+            {
+              track: "frontend",
+              text: "Built server-side attribution end to end: Meta CAPI on Django and GCP with cross-subdomain session stitching, plus a WebEngage migration onto CUID identity resolution while two brands merged.",
+            },
+            {
+              track: "frontend",
+              text: "Built a RAG adaptive learning platform on pgvector and the Claude API, plus a LangGraph multi-agent pipeline for question-paper generation. A/B tested with **500 students**, and **50 papers** are in production.",
+            },
+            {
+              track: "mobile",
+              text: "Owned mobile architecture, release engineering, and on-call as sole mobile architect for the iOS and Android apps, with **500k+ downloads**.",
+            },
+            {
+              track: "mobile",
+              text: "Designed and shipped custom Swift and Kotlin native modules for ECDH key exchange (prime256v1) and AES encryption, which moved card-transaction crypto on-device and out of the JS bundle.",
+            },
+            {
+              track: "mobile",
+              text: "Hardened the apps against mobile threats with root and jailbreak detection, runtime protection, SSL pinning, biometric authentication, encrypted storage and payloads, and locked-down release builds.",
+            },
+            {
+              track: "mobile",
+              text: "Delivered a Fixed Deposits product solo end to end and rebuilt the gold investment flow around pre-calculated return projections, so users can see the expected return before they invest.",
+            },
+            {
+              track: "mobile",
+              text: "Cut hotfix turnaround with CodePush OTA updates checked on app resume, and automated Sentry source-map uploads so production crashes stay debuggable.",
+            },
+            {
+              track: "mobile",
+              text: "Built reusable animation abstractions on Reanimated, Lottie, Rive, and Skia, so feature teams could ship consistent motion without touching native code.",
+            },
+            {
+              track: "frontend",
+              text: "Mentored **4 engineers** across mobile and web through code review, set the engineering standards both codebases follow, and partnered with founders on scope and prioritisation.",
+            },
           ],
         },
         {
-          track: "frontend",
           title: "Frontend Developer",
           start: "Feb 2022",
           end: "Mar 2024",
           bullets: [
-            "Built the web ecosystem from scratch: student, teacher, and admin portals plus two checkout surfaces. It now serves **500+ schools** and **10,000+ students**.",
-            "Architected a Turborepo monorepo with 3 checkout apps on shared Razorpay, Stripe, and BillDesk infrastructure, so a gateway change shipped once instead of three times.",
+            {
+              track: "frontend",
+              text: "Built the web ecosystem from scratch: student, teacher, and admin portals plus two checkout surfaces. It now serves **500+ schools** and **10,000+ students**.",
+            },
+            {
+              track: "frontend",
+              text: "Architected a Turborepo monorepo with 3 checkout apps on shared Razorpay, Stripe, and BillDesk infrastructure, so a gateway change shipped once instead of three times.",
+            },
+            {
+              track: "mobile",
+              text: "Built the core prepaid-card and savings flows in React Native with Redux on Hermes. The state and navigation architecture from that work still runs the app.",
+            },
+            {
+              track: "mobile",
+              text: "Handled the fintech lifecycle edge cases: re-authentication after backgrounding, force-update and maintenance gates, and deep links that survive PIN verification instead of being dropped.",
+            },
           ],
         },
       ],

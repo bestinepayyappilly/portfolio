@@ -255,9 +255,6 @@ export function ResumePDF({
                       {job.start} – {job.end} | {job.location}
                     </Text>
                   </View>
-                  {"note" in job && job.note && (
-                    <Text style={s.companyNote}>{job.note}</Text>
-                  )}
                   <View style={s.roleRow}>
                     <Text style={s.roleTitle}>{firstRole.title}</Text>
                     <Text style={s.roleDate}>

@@ -105,8 +105,8 @@ export default function WorkSection() {
                     </div>
                     <ul className="list-disc grid gap-1 pl-4 marker:text-muted-foreground/50">
                       {role.bullets.map((bullet) => (
-                        <li key={bullet}>
-                          <BoldText text={bullet} />
+                        <li key={bullet.text}>
+                          <BoldText text={bullet.text} />
                         </li>
                       ))}
                     </ul>

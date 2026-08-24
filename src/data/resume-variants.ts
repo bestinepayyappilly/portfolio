@@ -142,7 +142,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     label: "Product Engineer",
     headline: "Product Engineer | Next.js, TypeScript & Production AI Systems",
     summary:
-      "Product Engineer with ~5 years shipping consumer products end to end: the interface, the API behind it, the payments inside it, and the release that ships it. At Streak (YC W22) I was sole mobile architect for a teen fintech app with **500k+ downloads** on iOS and Android, owning architecture, release engineering, and on-call across React Native, Swift, and Kotlin, mentoring **4 engineers**, and working with the founders on what to build next. I also built and own National Finance Olympiad, Streak's education platform, from zero to **500+ schools** and **10,000+ students**: a React to Next.js migration run on a documented runbook and rollback path that cut first contentful paint from **3.2s** to **0.8s** without downtime, checkout across **4 payment gateways** verified server-side instead of trusting client callbacks, and production AI on the Claude API with RAG on pgvector and a LangGraph multi-agent pipeline, A/B tested with **500 students**. On my own I designed and shipped Synqed, an Android to Mac continuity app in Kotlin and Swift that keeps notifications, files, and calls on an encrypted link over your own Wi-Fi, with no cloud or account behind it. Based in Bangalore.",
+      "Product Engineer with ~5 years shipping consumer products end to end: the interface, the API behind it, the payments inside it, and the release that ships it. At Streak (YC W22) I was sole mobile architect for a teen fintech app with **500k+ downloads** on iOS and Android, owning architecture, release engineering, and on-call across React Native, Swift, and Kotlin, mentoring **4 engineers**, and working with the founders on what to build next. I also built and own the education platform the business runs on, taking it from zero to **500+ schools** and **10,000+ students**: a React to Next.js migration run on a documented runbook and rollback path that cut first contentful paint from **3.2s** to **0.8s** without downtime, checkout across **4 payment gateways** verified server-side instead of trusting client callbacks, and production AI on the Claude API with RAG on pgvector and a LangGraph multi-agent pipeline, A/B tested with **500 students**. On my own I designed and shipped Synqed, an Android to Mac continuity app in Kotlin and Swift that keeps notifications, files, and calls on an encrypted link over your own Wi-Fi, with no cloud or account behind it. Based in Bangalore.",
     expertise: [
       {
         label: "Product Frontend",
@@ -189,11 +189,19 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
  */
 export function orderedWork(variant: ResumeVariant) {
   return DATA.work.map((job) => {
-    const roles: RoleView[] = [...job.roles].sort(
-      (a, b) =>
-        variant.trackOrder.indexOf(a.track) -
-        variant.trackOrder.indexOf(b.track),
-    );
+    // Stable sort, so bullets keep their authored order inside each track.
+    const roles: RoleView[] = job.roles.map((role) => ({
+      title: role.title,
+      start: role.start,
+      end: role.end,
+      bullets: [...role.bullets]
+        .sort(
+          (a, b) =>
+            variant.trackOrder.indexOf(a.track) -
+            variant.trackOrder.indexOf(b.track),
+        )
+        .map((bullet) => bullet.text),
+    }));
 
     if (!variant.collapseRolesAs) return { ...job, roles };
 
