@@ -29,31 +29,38 @@ const c = {
   white: "#ffffff",
 };
 
-const s = StyleSheet.create({
+/**
+ * `dense` tightens type and spacing so a longer history still lands on one
+ * page. Every size below reads `pick(normal, dense)`.
+ */
+function makeStyles(dense: boolean) {
+  const p = (normal: number, tight: number) => (dense ? tight : normal);
+
+  return StyleSheet.create({
   page: {
     fontFamily: "Helvetica",
-    fontSize: 10,
+    fontSize: p(10, 9),
     color: c.dark,
     backgroundColor: c.white,
-    paddingTop: 32,
-    paddingBottom: 34,
-    paddingHorizontal: 44,
-    lineHeight: 1.45,
+    paddingTop: p(32, 22),
+    paddingBottom: p(34, 22),
+    paddingHorizontal: p(44, 38),
+    lineHeight: p(1.45, 1.3),
   },
   header: {
-    marginBottom: 16,
+    marginBottom: p(16, 8),
   },
   name: {
-    fontSize: 24,
+    fontSize: p(24, 20),
     fontWeight: 700,
     color: c.black,
     letterSpacing: -0.4,
     lineHeight: 1.15,
   },
   subtitle: {
-    fontSize: 11.5,
+    fontSize: p(11.5, 10.5),
     color: c.dark,
-    marginTop: 4,
+    marginTop: p(4, 2),
     letterSpacing: 0.2,
   },
   contactRow: {
@@ -71,19 +78,19 @@ const s = StyleSheet.create({
   contactText: { fontSize: 9, color: c.muted },
   link: { fontSize: 9, color: c.accent, textDecoration: "none" },
   sep: { fontSize: 9, color: c.light },
-  section: { marginTop: 12 },
+  section: { marginTop: p(12, 6) },
   sectionTitle: {
-    fontSize: 10,
+    fontSize: p(10, 9.5),
     fontWeight: 700,
     color: c.black,
-    marginBottom: 8,
+    marginBottom: p(8, 5),
     textTransform: "uppercase",
     letterSpacing: 0.6,
     borderBottomWidth: 0.75,
     borderBottomColor: c.border,
-    paddingBottom: 4,
+    paddingBottom: p(4, 2.5),
   },
-  summaryText: { fontSize: 10, color: c.body, lineHeight: 1.5 },
+  summaryText: { fontSize: p(10, 9), color: c.body, lineHeight: p(1.5, 1.28) },
   skillRow: { flexDirection: "row", marginBottom: 4 },
   skillLabel: {
     width: 118,
@@ -92,7 +99,7 @@ const s = StyleSheet.create({
     color: c.black,
   },
   skillText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.4 },
-  companyBlock: { marginBottom: 10 },
+  companyBlock: { marginBottom: p(10, 6) },
   companyRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -110,42 +117,57 @@ const s = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginTop: 7,
-    marginBottom: 3,
+    marginTop: p(7, 4),
+    marginBottom: p(3, 2),
   },
-  roleTitle: { fontSize: 10, fontWeight: 700, color: c.body, flex: 1 },
+  roleTitle: { fontSize: p(10, 9.5), fontWeight: 700, color: c.body, flex: 1 },
   roleDate: { fontSize: 9, color: c.light },
-  bullet: { flexDirection: "row", marginBottom: 2, paddingRight: 4 },
-  bulletDot: { width: 10, fontSize: 9.5, color: c.light },
-  bulletText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.45 },
+  bullet: { flexDirection: "row", marginBottom: p(2, 1), paddingRight: 4 },
+  bulletDot: { width: p(10, 8), fontSize: p(9.5, 8.7), color: c.light },
+  bulletText: {
+    flex: 1,
+    fontSize: p(9.5, 8.7),
+    color: c.body,
+    lineHeight: p(1.45, 1.3),
+  },
   bold: { fontFamily: "Helvetica-Bold", color: c.black },
-  projectRow: { marginBottom: 7 },
+  projectRow: { marginBottom: p(7, 4) },
   projectHead: { flexDirection: "row", alignItems: "center", gap: 4 },
-  projectName: { fontSize: 10.5, fontWeight: 700, color: c.black },
+  projectName: { fontSize: p(10.5, 9.8), fontWeight: 700, color: c.black },
   projectNameLink: {
-    fontSize: 10.5,
+    fontSize: p(10.5, 9.8),
     fontWeight: 700,
     color: c.accent,
     textDecoration: "none",
   },
-  projectDesc: { fontSize: 9.5, color: c.body, lineHeight: 1.4, marginTop: 2 },
+  projectDesc: {
+    fontSize: p(9.5, 8.7),
+    color: c.body,
+    lineHeight: p(1.4, 1.28),
+    marginTop: 2,
+  },
   eduRow: { flexDirection: "row", justifyContent: "space-between" },
-  eduText: { fontSize: 10, color: c.body },
+  eduText: { fontSize: p(10, 9), color: c.body },
   eduDate: { fontSize: 9, color: c.light },
-});
+  });
+}
+
+type Styles = ReturnType<typeof makeStyles>;
 
 function InlineText({
   text,
   style,
+  st,
 }: {
   text: string;
-  style: typeof s.bulletText | typeof s.summaryText;
+  style: Styles["bulletText"] | Styles["summaryText"];
+  st: Styles;
 }) {
   return (
     <Text style={style}>
       {splitBoldSegments(text).map((seg, i) =>
         seg.bold ? (
-          <Text key={i} style={s.bold}>
+          <Text key={i} style={st.bold}>
             {seg.text}
           </Text>
         ) : (
@@ -156,17 +178,17 @@ function InlineText({
   );
 }
 
-function Bullet({ text }: { text: string }) {
+function Bullet({ text, st }: { text: string; st: Styles }) {
   return (
-    <View style={s.bullet} wrap={false}>
-      <Text style={s.bulletDot}>•</Text>
-      <InlineText text={text} style={s.bulletText} />
+    <View style={st.bullet} wrap={false}>
+      <Text style={st.bulletDot}>•</Text>
+      <InlineText text={text} style={st.bulletText} st={st} />
     </View>
   );
 }
 
-function SectionTitle({ children }: { children: string }) {
-  return <Text style={s.sectionTitle}>{children}</Text>;
+function SectionTitle({ children, st }: { children: string; st: Styles }) {
+  return <Text style={st.sectionTitle}>{children}</Text>;
 }
 
 function AppleMark() {
@@ -184,6 +206,7 @@ export function ResumePDF({
 }) {
   const v = RESUME_VARIANTS[variant];
   const work = orderedWork(v);
+  const s = makeStyles(v.dense === true);
   return (
     <Document
       title={`Bestine Payyappilly — ${v.label} Resume`}
@@ -224,22 +247,24 @@ export function ResumePDF({
         </View>
 
         <View style={s.section}>
-          <SectionTitle>Summary</SectionTitle>
-          <InlineText text={v.summary} style={s.summaryText} />
+          <SectionTitle st={s}>Summary</SectionTitle>
+          <InlineText text={v.summary} style={s.summaryText} st={s} />
         </View>
 
-        <View style={s.section}>
-          <SectionTitle>Core Technical Expertise</SectionTitle>
-          {v.expertise.map((group) => (
-            <View key={group.label} style={s.skillRow} wrap={false}>
-              <Text style={s.skillLabel}>{group.label}</Text>
-              <Text style={s.skillText}>{group.items}</Text>
-            </View>
-          ))}
-        </View>
+        {v.showExpertise !== false && (
+          <View style={s.section}>
+            <SectionTitle st={s}>Core Technical Expertise</SectionTitle>
+            {v.expertise.map((group) => (
+              <View key={group.label} style={s.skillRow} wrap={false}>
+                <Text style={s.skillLabel}>{group.label}</Text>
+                <Text style={s.skillText}>{group.items}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={s.section}>
-          <SectionTitle>Professional Experience</SectionTitle>
+          <SectionTitle st={s}>Professional Experience</SectionTitle>
           {work.map((job) => {
             const [firstRole, ...restRoles] = job.roles;
             const [firstBullet, ...restBullets] = firstRole.bullets;
@@ -261,10 +286,10 @@ export function ResumePDF({
                       {firstRole.start} – {firstRole.end}
                     </Text>
                   </View>
-                  <Bullet text={firstBullet} />
+                  <Bullet text={firstBullet} st={s} />
                 </View>
                 {restBullets.map((bullet) => (
-                  <Bullet key={bullet} text={bullet} />
+                  <Bullet key={bullet} text={bullet} st={s} />
                 ))}
                 {restRoles.map((role) => (
                   <View key={role.title + role.start}>
@@ -275,7 +300,7 @@ export function ResumePDF({
                       </Text>
                     </View>
                     {role.bullets.map((bullet) => (
-                      <Bullet key={bullet} text={bullet} />
+                      <Bullet key={bullet} text={bullet} st={s} />
                     ))}
                   </View>
                 ))}
@@ -285,7 +310,7 @@ export function ResumePDF({
         </View>
 
         <View style={s.section}>
-          <SectionTitle>Personal Projects</SectionTitle>
+          <SectionTitle st={s}>Personal Projects</SectionTitle>
 
           {v.projects.map((project) => (
             <View key={project.name} style={s.projectRow} wrap={false}>
@@ -306,7 +331,7 @@ export function ResumePDF({
         </View>
 
         <View style={s.section}>
-          <SectionTitle>Education</SectionTitle>
+          <SectionTitle st={s}>Education</SectionTitle>
           <View style={s.eduRow} wrap={false}>
             <Text style={s.eduText}>
               SRM University — B.Tech, Electronics &amp; Communication

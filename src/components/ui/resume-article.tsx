@@ -105,16 +105,20 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
 
         <hr />
 
-        <h2>Core Technical Expertise</h2>
-        <ul>
-          {v.expertise.map((group) => (
-            <li key={group.label}>
-              <strong>{group.label}:</strong> {group.items}
-            </li>
-          ))}
-        </ul>
+        {v.showExpertise !== false && (
+          <>
+            <h2>Core Technical Expertise</h2>
+            <ul>
+              {v.expertise.map((group) => (
+                <li key={group.label}>
+                  <strong>{group.label}:</strong> {group.items}
+                </li>
+              ))}
+            </ul>
 
-        <hr />
+            <hr />
+          </>
+        )}
 
         <h2>Professional Experience</h2>
 

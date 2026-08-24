@@ -37,6 +37,13 @@ export type ResumeVariant = {
    * for the role being applied for and the span matters more than the steps.
    */
   collapseRolesAs?: string;
+  /**
+   * Defaults to true. Set false when the skills list repeats what the bullets
+   * already prove and the space is better spent keeping the resume to one page.
+   */
+  showExpertise?: boolean;
+  /** Tightens PDF type and spacing so a longer history still lands on one page */
+  dense?: boolean;
   projects: ReadonlyArray<ResumeProject>;
   fileName: string;
 };
@@ -177,6 +184,8 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     ],
     // The web platform is the stronger product story, so it leads here.
     trackOrder: ["frontend", "mobile"],
+    showExpertise: false,
+    dense: true,
     projects: [SYNQED, BAKI],
     fileName: "Bestine_Payyappilly_Product_Engineer.pdf",
   },
