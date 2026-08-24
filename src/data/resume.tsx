@@ -175,7 +175,7 @@ export const DATA = {
           bullets: [
             {
               track: "frontend",
-              text: "Built the web ecosystem from scratch: student, teacher, and admin portals plus two checkout surfaces. It now serves **500+ schools** and **10,000+ students**.",
+              text: "Built the web ecosystem from scratch: student, teacher, and admin portals plus two checkout surfaces. It now serves **500+ schools** and **100,000 participants**.",
             },
             {
               track: "frontend",
