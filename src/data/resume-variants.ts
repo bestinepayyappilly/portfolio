@@ -31,8 +31,22 @@ export type ResumeVariant = {
    * the reader sees at the top rather than reordering companies.
    */
   trackOrder: ReadonlyArray<RoleTrack>;
+  /**
+   * Collapses the per-role breakdown into one heading under this title, running
+   * the full length of the company. Use it when the promotion history is noise
+   * for the role being applied for and the span matters more than the steps.
+   */
+  collapseRolesAs?: string;
   projects: ReadonlyArray<ResumeProject>;
   fileName: string;
+};
+
+/** A role as the resume renders it, whether real or collapsed from several. */
+export type RoleView = {
+  title: string;
+  start: string;
+  end: string;
+  bullets: ReadonlyArray<string>;
 };
 
 const projectHref = (title: string) => {
@@ -163,6 +177,7 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
     ],
     // The web platform is the stronger product story, so it leads here.
     trackOrder: ["frontend", "mobile"],
+    collapseRolesAs: "Senior Frontend Developer",
     projects: [SYNQED, BAKI],
     fileName: "Bestine_Payyappilly_Product_Engineer.pdf",
   },
@@ -173,12 +188,26 @@ export const RESUME_VARIANTS: Record<VariantSlug, ResumeVariant> = {
  * stable, so roles stay newest-first within their own track.
  */
 export function orderedWork(variant: ResumeVariant) {
-  return DATA.work.map((job) => ({
-    ...job,
-    roles: [...job.roles].sort(
+  return DATA.work.map((job) => {
+    const roles: RoleView[] = [...job.roles].sort(
       (a, b) =>
         variant.trackOrder.indexOf(a.track) -
         variant.trackOrder.indexOf(b.track),
-    ),
-  }));
+    );
+
+    if (!variant.collapseRolesAs) return { ...job, roles };
+
+    // One heading spanning the company, keeping every bullet in track order.
+    return {
+      ...job,
+      roles: [
+        {
+          title: variant.collapseRolesAs,
+          start: job.start,
+          end: job.end,
+          bullets: roles.flatMap((role) => [...role.bullets]),
+        },
+      ],
+    };
+  });
 }

@@ -109,7 +109,7 @@ export const DATA = {
       // One employer, one timeline: National Finance Olympiad is Streak's
       // education product, so its roles sit here rather than reading as a
       // second, simultaneous full-time job.
-      note: "National Finance Olympiad is Streak's financial education product, so the web roles below sat inside the same company as the mobile work.",
+      note: "National Finance Olympiad is Streak's financial education product, so the web work below sat inside the same company as the mobile work.",
       href: "https://streakcard.com/",
       location: "Bengaluru, Karnataka",
       title: "Senior Mobile & Frontend Developer",
