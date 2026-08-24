@@ -124,7 +124,7 @@ export const DATA = {
           bullets: [
             {
               track: "frontend",
-              text: "Led the student portal's React to Next.js migration on a documented runbook and rollback path. First contentful paint went from **3.2s** to **0.8s**, with no downtime at cutover.",
+              text: "Led the student portal's **React to Next.js migration** on a documented runbook and rollback path, cutting page load time with **no downtime at cutover**.",
             },
             {
               track: "frontend",
