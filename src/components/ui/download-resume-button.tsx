@@ -6,7 +6,7 @@ import { RESUME_VARIANTS, type VariantSlug } from "@/data/resume-variants";
 import { cn } from "@/lib/utils";
 
 export function DownloadResumeButton({
-  variant = "mobile",
+  variant = "product",
   className,
 }: {
   variant?: VariantSlug;

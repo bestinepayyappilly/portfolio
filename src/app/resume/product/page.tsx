@@ -1,16 +1,6 @@
-import { DATA } from "@/data/resume";
-import { RESUME_VARIANTS } from "@/data/resume-variants";
-import { ResumeArticle } from "@/components/ui/resume-article";
-import type { Metadata } from "next";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Product Engineer Resume",
-  description: `${DATA.name}, ${RESUME_VARIANTS.product.headline}. Resume and work experience.`,
-  alternates: {
-    canonical: `${DATA.url}/resume/product`,
-  },
-};
-
+// The product resume is the default at /resume; keep old links working
 export default function ProductResumePage() {
-  return <ResumeArticle variant="product" />;
+  permanentRedirect("/resume");
 }

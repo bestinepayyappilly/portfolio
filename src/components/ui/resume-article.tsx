@@ -6,21 +6,20 @@ import { BoldText } from "@/lib/bold-text";
 import {
   RESUME_VARIANTS,
   orderedWork,
-  mergedRoles,
   type VariantSlug,
 } from "@/data/resume-variants";
 import { cn } from "@/lib/utils";
 
 const VARIANT_PATH: Record<VariantSlug, string> = {
-  mobile: "/resume",
+  product: "/resume",
+  mobile: "/resume/mobile",
   frontend: "/resume/frontend",
-  product: "/resume/product",
 };
 
 function VariantSwitcher({ active }: { active: VariantSlug }) {
   return (
     <div className="inline-flex rounded-lg border border-border p-0.5 text-sm">
-      {(Object.keys(RESUME_VARIANTS) as VariantSlug[]).map((slug) => (
+      {(Object.keys(VARIANT_PATH) as VariantSlug[]).map((slug) => (
         <Link
           key={slug}
           href={VARIANT_PATH[slug]}
@@ -41,8 +40,6 @@ function VariantSwitcher({ active }: { active: VariantSlug }) {
 export function ResumeArticle({ variant }: { variant: VariantSlug }) {
   const v = RESUME_VARIANTS[variant];
   const work = orderedWork(v);
-  const merged = v.mergedCompany;
-  const roles = mergedRoles(v);
 
   return (
     <section className="max-w-3xl mx-auto">
@@ -108,53 +105,23 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
 
         <hr />
 
+        {v.showExpertise !== false && (
+          <>
+            <h2>Core Technical Expertise</h2>
+            <ul>
+              {v.expertise.map((group) => (
+                <li key={group.label}>
+                  <strong>{group.label}:</strong> {group.items}
+                </li>
+              ))}
+            </ul>
+
+            <hr />
+          </>
+        )}
+
         <h2>Professional Experience</h2>
 
-        {merged ? (
-          <div>
-            <h3>
-              <a
-                href={merged.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4 hover:text-foreground transition-colors"
-              >
-                {merged.name}
-              </a>{" "}
-              {merged.badges.map((badge) => (
-                <span
-                  key={badge}
-                  className="text-xs font-medium bg-muted px-1.5 py-0.5 rounded"
-                >
-                  {badge}
-                </span>
-              ))}
-            </h3>
-            <p className="text-sm! mt-0!">
-              {merged.start} – {merged.end} &middot; {merged.location}
-            </p>
-            <p className="text-sm!">{merged.note}</p>
-            {roles.map((role) => (
-              <div key={role.title + role.start}>
-                <p className="mb-1! font-semibold text-foreground">
-                  {role.title}
-                  {role.product ? `, ${role.product}` : ""}
-                  <span className="ml-2 font-normal text-sm text-muted-foreground">
-                    {role.start} – {role.end}
-                  </span>
-                </p>
-                <ul className="mt-0!">
-                  {role.bullets.map((bullet) => (
-                    <li key={bullet}>
-                      <BoldText text={bullet} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <>
         {work.map((job) => (
           <div key={job.company}>
             <h3>
@@ -200,11 +167,7 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
             ))}
           </div>
         ))}
-          </>
-        )}
 
-        {v.showProjects !== false && (
-          <>
         <hr />
 
         <h2>Personal Projects</h2>
@@ -230,33 +193,27 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
                   Live on the App Store
                 </span>
               )}
+              {project.playStoreHref && (
+                <a
+                  href={project.playStoreHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium bg-muted px-1.5 py-0.5 rounded align-middle no-underline hover:text-foreground transition-colors"
+                >
+                  <Icons.android className="size-3" />
+                  Live on Google Play
+                </a>
+              )}
             </h3>
             <p>{project.description}</p>
           </div>
         ))}
-          </>
-        )}
-
-        {v.showExpertise !== false && (
-          <>
-        <hr />
-
-        <h2>Core Technical Expertise</h2>
-        <ul>
-          {v.expertise.map((group) => (
-            <li key={group.label}>
-              <strong>{group.label}:</strong> {group.items}
-            </li>
-          ))}
-        </ul>
 
         <hr />
-          </>
-        )}
 
         <h2>Education</h2>
         <p>
-          <strong>SRM University</strong> &middot; B.Tech, Electronics &amp;
+          <strong>SRM University</strong>, B.Tech, Electronics &amp;
           Communication Engineering &middot; 2022
         </p>
       </article>

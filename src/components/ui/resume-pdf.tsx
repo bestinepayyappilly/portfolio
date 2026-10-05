@@ -8,12 +8,10 @@ import {
   Svg,
   Path,
 } from "@react-pdf/renderer";
-import type { ComponentProps } from "react";
 import { splitBoldSegments } from "@/lib/bold-text";
 import {
   RESUME_VARIANTS,
   orderedWork,
-  mergedRoles,
   type VariantSlug,
 } from "@/data/resume-variants";
 
@@ -31,31 +29,38 @@ const c = {
   white: "#ffffff",
 };
 
-const s = StyleSheet.create({
+/**
+ * `dense` tightens type and spacing so a longer history still lands on one
+ * page. Every size below reads `pick(normal, dense)`.
+ */
+function makeStyles(dense: boolean) {
+  const p = (normal: number, tight: number) => (dense ? tight : normal);
+
+  return StyleSheet.create({
   page: {
     fontFamily: "Helvetica",
-    fontSize: 10,
+    fontSize: p(10, 9),
     color: c.dark,
     backgroundColor: c.white,
-    paddingTop: 32,
-    paddingBottom: 34,
-    paddingHorizontal: 44,
-    lineHeight: 1.45,
+    paddingTop: p(32, 22),
+    paddingBottom: p(34, 22),
+    paddingHorizontal: p(44, 38),
+    lineHeight: p(1.45, 1.3),
   },
   header: {
-    marginBottom: 16,
+    marginBottom: p(16, 8),
   },
   name: {
-    fontSize: 24,
+    fontSize: p(24, 20),
     fontWeight: 700,
     color: c.black,
     letterSpacing: -0.4,
     lineHeight: 1.15,
   },
   subtitle: {
-    fontSize: 11.5,
+    fontSize: p(11.5, 10.5),
     color: c.dark,
-    marginTop: 4,
+    marginTop: p(4, 2),
     letterSpacing: 0.2,
   },
   contactRow: {
@@ -73,19 +78,19 @@ const s = StyleSheet.create({
   contactText: { fontSize: 9, color: c.muted },
   link: { fontSize: 9, color: c.accent, textDecoration: "none" },
   sep: { fontSize: 9, color: c.light },
-  section: { marginTop: 12 },
+  section: { marginTop: p(12, 6) },
   sectionTitle: {
-    fontSize: 10,
+    fontSize: p(10, 9.5),
     fontWeight: 700,
     color: c.black,
-    marginBottom: 8,
+    marginBottom: p(8, 5),
     textTransform: "uppercase",
     letterSpacing: 0.6,
     borderBottomWidth: 0.75,
     borderBottomColor: c.border,
-    paddingBottom: 4,
+    paddingBottom: p(4, 2.5),
   },
-  summaryText: { fontSize: 10, color: c.body, lineHeight: 1.5 },
+  summaryText: { fontSize: p(10, 9), color: c.body, lineHeight: p(1.5, 1.28) },
   skillRow: { flexDirection: "row", marginBottom: 4 },
   skillLabel: {
     width: 118,
@@ -94,7 +99,7 @@ const s = StyleSheet.create({
     color: c.black,
   },
   skillText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.4 },
-  companyBlock: { marginBottom: 10 },
+  companyBlock: { marginBottom: p(10, 6) },
   companyRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -112,87 +117,57 @@ const s = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-    marginTop: 7,
-    marginBottom: 3,
+    marginTop: p(7, 4),
+    marginBottom: p(3, 2),
   },
-  roleTitle: { fontSize: 10, fontWeight: 700, color: c.body, flex: 1 },
+  roleTitle: { fontSize: p(10, 9.5), fontWeight: 700, color: c.body, flex: 1 },
   roleDate: { fontSize: 9, color: c.light },
-  bullet: { flexDirection: "row", marginBottom: 2, paddingRight: 4 },
-  bulletDot: { width: 10, fontSize: 9.5, color: c.light },
-  bulletText: { flex: 1, fontSize: 9.5, color: c.body, lineHeight: 1.45 },
+  bullet: { flexDirection: "row", marginBottom: p(2, 1), paddingRight: 4 },
+  bulletDot: { width: p(10, 8), fontSize: p(9.5, 8.7), color: c.light },
+  bulletText: {
+    flex: 1,
+    fontSize: p(9.5, 8.7),
+    color: c.body,
+    lineHeight: p(1.45, 1.3),
+  },
   bold: { fontFamily: "Helvetica-Bold", color: c.black },
-  projectRow: { marginBottom: 7 },
+  projectRow: { marginBottom: p(7, 4) },
   projectHead: { flexDirection: "row", alignItems: "center", gap: 4 },
-  projectName: { fontSize: 10.5, fontWeight: 700, color: c.black },
+  projectName: { fontSize: p(10.5, 9.8), fontWeight: 700, color: c.black },
   projectNameLink: {
-    fontSize: 10.5,
+    fontSize: p(10.5, 9.8),
     fontWeight: 700,
     color: c.accent,
     textDecoration: "none",
   },
-  projectDesc: { fontSize: 9.5, color: c.body, lineHeight: 1.4, marginTop: 2 },
-  eduRow: { flexDirection: "row", justifyContent: "space-between" },
-  eduText: { fontSize: 10, color: c.body },
-  eduDate: { fontSize: 9, color: c.light },
-});
-
-/**
- * Overrides layered on top of `s` when a variant sets `dense`. Only the values
- * that change are listed — everything else keeps the roomier default, so the
- * two-page variants are untouched.
- */
-const d = StyleSheet.create({
-  page: {
-    paddingTop: 22,
-    paddingBottom: 16,
-    paddingHorizontal: 38,
-    lineHeight: 1.3,
+  projectDesc: {
+    fontSize: p(9.5, 8.7),
+    color: c.body,
+    lineHeight: p(1.4, 1.28),
+    marginTop: 2,
   },
-  header: { marginBottom: 6 },
-  name: { fontSize: 20 },
-  subtitle: { fontSize: 10, marginTop: 2 },
-  section: { marginTop: 5 },
-  sectionTitle: { marginBottom: 4, paddingBottom: 2.5 },
-  summaryText: { fontSize: 9.2, lineHeight: 1.3 },
-  companyBlock: { marginBottom: 4 },
-  companyName: { fontSize: 11.5 },
-  companyNote: { marginTop: 1 },
-  roleRow: { marginTop: 3, marginBottom: 1.5 },
-  bullet: { marginBottom: 0.3 },
-  bulletDot: { fontSize: 8.9 },
-  bulletText: { fontSize: 8.9, lineHeight: 1.22 },
-  projectRow: { marginBottom: 2.5 },
-  projectName: { fontSize: 10 },
-  projectNameLink: { fontSize: 10 },
-  projectDesc: { fontSize: 8.9, lineHeight: 1.3, marginTop: 1 },
-  eduText: { fontSize: 9.2 },
-});
+  eduRow: { flexDirection: "row", justifyContent: "space-between" },
+  eduText: { fontSize: p(10, 9), color: c.body },
+  eduDate: { fontSize: 9, color: c.light },
+  });
+}
 
-/** react-pdf's own Style, recovered from a component's prop type. */
-type PdfStyle = Exclude<
-  NonNullable<ComponentProps<typeof View>["style"]>,
-  readonly unknown[]
->;
-
-/** Base style, with the dense override layered on when the variant asks. */
-const sx = (
-  dense: boolean,
-  base: PdfStyle,
-  override: PdfStyle,
-): PdfStyle | PdfStyle[] => (dense ? [base, override] : base);
+type Styles = ReturnType<typeof makeStyles>;
 
 function InlineText({
   text,
   style,
+  st,
 }: {
   text: string;
-  style: PdfStyle | PdfStyle[];
+  style: Styles["bulletText"] | Styles["summaryText"];
+  st: Styles;
 }) {
   return (
     <Text style={style}>
       {splitBoldSegments(text).map((seg, i) =>
         seg.bold ? (
-          <Text key={i} style={s.bold}>
+          <Text key={i} style={st.bold}>
             {seg.text}
           </Text>
         ) : (
@@ -203,24 +178,27 @@ function InlineText({
   );
 }
 
-function Bullet({ text, dense }: { text: string; dense: boolean }) {
+function Bullet({ text, st }: { text: string; st: Styles }) {
   return (
-    <View style={sx(dense, s.bullet, d.bullet)} wrap={false}>
-      <Text style={sx(dense, s.bulletDot, d.bulletDot)}>•</Text>
-      <InlineText text={text} style={sx(dense, s.bulletText, d.bulletText)} />
+    <View style={st.bullet} wrap={false}>
+      <Text style={st.bulletDot}>•</Text>
+      <InlineText text={text} style={st.bulletText} st={st} />
     </View>
   );
 }
 
-function SectionTitle({
-  children,
-  dense,
-}: {
-  children: string;
-  dense: boolean;
-}) {
+function SectionTitle({ children, st }: { children: string; st: Styles }) {
+  return <Text style={st.sectionTitle}>{children}</Text>;
+}
+
+const ANDROID_LOGO_PATH =
+  "M1 18q.225-2.675 1.638-4.925T6.4 9.5L4.55 6.3q-.15-.225-.075-.475T4.8 5.45q.2-.125.45-.05t.4.3L7.5 8.9Q9.65 8 12 8t4.5.9l1.85-3.2q.15-.225.4-.3t.45.05q.25.125.325.375t-.075.475L17.6 9.5q2.35 1.325 3.762 3.575T23 18zm6-2.75q.525 0 .888-.363T8.25 14t-.363-.888T7 12.75t-.888.363T5.75 14t.363.888t.887.362m10 0q.525 0 .888-.363T18.25 14t-.363-.888T17 12.75t-.888.363t-.362.887t.363.888t.887.362";
+
+function AndroidMark() {
   return (
-    <Text style={sx(dense, s.sectionTitle, d.sectionTitle)}>{children}</Text>
+    <Svg width={8} height={8} viewBox="0 0 24 24">
+      <Path d={ANDROID_LOGO_PATH} fill={c.accent} />
+    </Svg>
   );
 }
 
@@ -233,25 +211,23 @@ function AppleMark() {
 }
 
 export function ResumePDF({
-  variant = "mobile",
+  variant = "product",
 }: {
   variant?: VariantSlug;
 }) {
   const v = RESUME_VARIANTS[variant];
   const work = orderedWork(v);
-  const merged = v.mergedCompany;
-  const roles = mergedRoles(v);
-  const dense = v.dense === true;
+  const s = makeStyles(v.dense === true);
   return (
     <Document
       title={`Bestine Payyappilly, ${v.label} Resume`}
       author="Bestine Payyappilly"
       subject={v.headline}
     >
-      <Page size="A4" style={sx(dense, s.page, d.page)}>
-        <View style={sx(dense, s.header, d.header)}>
-          <Text style={sx(dense, s.name, d.name)}>Bestine Payyappilly</Text>
-          <Text style={sx(dense, s.subtitle, d.subtitle)}>{v.headline}</Text>
+      <Page size="A4" style={s.page}>
+        <View style={s.header}>
+          <Text style={s.name}>Bestine Payyappilly</Text>
+          <Text style={s.subtitle}>{v.headline}</Text>
           <View style={s.contactRow}>
             <Text style={s.contactText}>Bangalore, India</Text>
             <Text style={s.sep}>|</Text>
@@ -281,55 +257,33 @@ export function ResumePDF({
           </View>
         </View>
 
-        <View style={sx(dense, s.section, d.section)}>
-          <SectionTitle dense={dense}>Summary</SectionTitle>
-          <InlineText text={v.summary} style={sx(dense, s.summaryText, d.summaryText)} />
+        <View style={s.section}>
+          <SectionTitle st={s}>Summary</SectionTitle>
+          <InlineText text={v.summary} style={s.summaryText} st={s} />
         </View>
 
-        <View style={sx(dense, s.section, d.section)}>
-          <SectionTitle dense={dense}>Professional Experience</SectionTitle>
-          {merged ? (
-            <View style={sx(dense, s.companyBlock, d.companyBlock)}>
-              <View wrap={false}>
-                <View style={s.companyRow}>
-                  <Text style={sx(dense, s.companyName, d.companyName)}>
-                    {merged.name}
-                    {merged.badges.length > 0 &&
-                      ` (${merged.badges.join(", ")})`}
-                  </Text>
-                  <Text style={s.companyMeta}>
-                    {merged.start} – {merged.end} | {merged.location}
-                  </Text>
-                </View>
-                <Text style={sx(dense, s.companyNote, d.companyNote)}>{merged.note}</Text>
+        {v.showExpertise !== false && (
+          <View style={s.section}>
+            <SectionTitle st={s}>Core Technical Expertise</SectionTitle>
+            {v.expertise.map((group) => (
+              <View key={group.label} style={s.skillRow} wrap={false}>
+                <Text style={s.skillLabel}>{group.label}</Text>
+                <Text style={s.skillText}>{group.items}</Text>
               </View>
-              {roles.map((role) => (
-                <View key={role.title + role.start} break={false}>
-                  <View style={sx(dense, s.roleRow, d.roleRow)} wrap={false} minPresenceAhead={40}>
-                    <Text style={s.roleTitle}>
-                      {role.title}
-                      {role.product ? `, ${role.product}` : ""}
-                    </Text>
-                    <Text style={s.roleDate}>
-                      {role.start} – {role.end}
-                    </Text>
-                  </View>
-                  {role.bullets.map((bullet) => (
-                    <Bullet key={bullet} text={bullet} dense={dense} />
-                  ))}
-                </View>
-              ))}
-            </View>
-          ) : (
-            <>
+            ))}
+          </View>
+        )}
+
+        <View style={s.section}>
+          <SectionTitle st={s}>Professional Experience</SectionTitle>
           {work.map((job) => {
             const [firstRole, ...restRoles] = job.roles;
             const [firstBullet, ...restBullets] = firstRole.bullets;
             return (
-              <View key={job.company} style={sx(dense, s.companyBlock, d.companyBlock)}>
+              <View key={job.company} style={s.companyBlock}>
                 <View wrap={false}>
                   <View style={s.companyRow}>
-                    <Text style={sx(dense, s.companyName, d.companyName)}>
+                    <Text style={s.companyName}>
                       {job.company}
                       {job.badges.length > 0 && ` (${job.badges.join(", ")})`}
                     </Text>
@@ -337,90 +291,68 @@ export function ResumePDF({
                       {job.start} – {job.end} | {job.location}
                     </Text>
                   </View>
-                  {"note" in job && job.note && (
-                    <Text style={s.companyNote}>{job.note}</Text>
-                  )}
-                  <View style={sx(dense, s.roleRow, d.roleRow)}>
+                  <View style={s.roleRow}>
                     <Text style={s.roleTitle}>{firstRole.title}</Text>
                     <Text style={s.roleDate}>
                       {firstRole.start} – {firstRole.end}
                     </Text>
                   </View>
-                  <Bullet text={firstBullet} dense={dense} />
+                  <Bullet text={firstBullet} st={s} />
                 </View>
                 {restBullets.map((bullet) => (
-                  <Bullet key={bullet} text={bullet} dense={dense} />
+                  <Bullet key={bullet} text={bullet} st={s} />
                 ))}
                 {restRoles.map((role) => (
                   <View key={role.title + role.start}>
-                    <View style={sx(dense, s.roleRow, d.roleRow)} wrap={false} minPresenceAhead={60}>
+                    <View style={s.roleRow} wrap={false} minPresenceAhead={60}>
                       <Text style={s.roleTitle}>{role.title}</Text>
                       <Text style={s.roleDate}>
                         {role.start} – {role.end}
                       </Text>
                     </View>
                     {role.bullets.map((bullet) => (
-                      <Bullet key={bullet} text={bullet} dense={dense} />
+                      <Bullet key={bullet} text={bullet} st={s} />
                     ))}
                   </View>
                 ))}
               </View>
             );
           })}
-            </>
-          )}
         </View>
 
-        {v.showProjects !== false && (
-        <View style={sx(dense, s.section, d.section)}>
-          <SectionTitle dense={dense}>Personal Projects</SectionTitle>
+        <View style={s.section}>
+          <SectionTitle st={s}>Personal Projects</SectionTitle>
 
           {v.projects.map((project) => (
-            <View
-              key={project.name}
-              style={sx(dense, s.projectRow, d.projectRow)}
-              wrap={false}
-            >
+            <View key={project.name} style={s.projectRow} wrap={false}>
               <View style={s.projectHead}>
                 {project.appStore && <AppleMark />}
                 {project.href ? (
-                  <Link
-                    src={project.href}
-                    style={sx(dense, s.projectNameLink, d.projectNameLink)}
-                  >
+                  <Link src={project.href} style={s.projectNameLink}>
                     {project.name}
                     {project.appStore ? " (Live on the App Store)" : ""}
                   </Link>
                 ) : (
-                  <Text style={sx(dense, s.projectName, d.projectName)}>
-                    {project.name}
-                  </Text>
+                  <Text style={s.projectName}>{project.name}</Text>
+                )}
+                {project.playStoreHref && (
+                  <>
+                    <AndroidMark />
+                    <Link src={project.playStoreHref} style={s.projectNameLink}>
+                      Live on Google Play
+                    </Link>
+                  </>
                 )}
               </View>
-              <Text style={sx(dense, s.projectDesc, d.projectDesc)}>
-                {project.description}
-              </Text>
+              <Text style={s.projectDesc}>{project.description}</Text>
             </View>
           ))}
         </View>
-        )}
 
-        {v.showExpertise !== false && (
-        <View style={sx(dense, s.section, d.section)}>
-          <SectionTitle dense={dense}>Core Technical Expertise</SectionTitle>
-          {v.expertise.map((group) => (
-            <View key={group.label} style={s.skillRow} wrap={false}>
-              <Text style={s.skillLabel}>{group.label}</Text>
-              <Text style={s.skillText}>{group.items}</Text>
-            </View>
-          ))}
-        </View>
-        )}
-
-        <View style={sx(dense, s.section, d.section)}>
-          <SectionTitle dense={dense}>Education</SectionTitle>
+        <View style={s.section}>
+          <SectionTitle st={s}>Education</SectionTitle>
           <View style={s.eduRow} wrap={false}>
-            <Text style={sx(dense, s.eduText, d.eduText)}>
+            <Text style={s.eduText}>
               SRM University, B.Tech in Electronics &amp; Communication
               Engineering
             </Text>
