@@ -261,7 +261,7 @@ export const DATA = {
         },
         {
           type: "Website",
-          href: "https://baki-xi.vercel.app/",
+          href: "https://bakiapp.com/",
           icon: <Icons.globe className="size-3" />,
         },
       ],
