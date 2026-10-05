@@ -229,6 +229,16 @@ export const DATA = {
           href: "https://synqed.studio",
           icon: <Icons.globe className="size-3" />,
         },
+        {
+          type: "Play Store",
+          href: "https://play.google.com/store/apps/details?id=studio.synqed",
+          icon: <Icons.android className="size-3" />,
+        },
+        {
+          type: "GitHub",
+          href: "https://github.com/bestinepayyappilly/synqed-releases",
+          icon: <Icons.github className="size-3" />,
+        },
       ],
       image: "/synqed/banner.png",
       video: "",
