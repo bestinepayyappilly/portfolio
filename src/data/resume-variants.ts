@@ -15,6 +15,8 @@ export type ResumeProject = {
   /** Omitted when the project has no public URL — rendered as plain text */
   href?: string;
   appStore: boolean;
+  /** Google Play listing, shown as its own badge beside the project name */
+  playStoreHref?: string;
   description: string;
 };
 
@@ -56,6 +58,11 @@ export type RoleView = {
   bullets: ReadonlyArray<string>;
 };
 
+const projectLink = (title: string, type: string) =>
+  DATA.projects
+    .find((p) => p.title === title)
+    ?.links.find((l) => l.type === type)?.href;
+
 const projectHref = (title: string) => {
   const href = DATA.projects.find((p) => p.title === title)?.href;
   // "#" is the placeholder for projects with nothing public to link to
@@ -82,8 +89,9 @@ const SYNQED: ResumeProject = {
   name: "Synqed",
   href: projectHref("Synqed"),
   appStore: false,
+  playStoreHref: projectLink("Synqed", "Play Store"),
   description:
-    "Built solo across three platforms (Android/Kotlin, macOS/Swift, and a Next.js site) for Android to Mac continuity: notifications, clipboard, files, SMS, and calls over an encrypted link on your own Wi-Fi, with no cloud, account, or relay. AES-256-GCM on a versioned protocol with ECDH pairing and per-session forward secrecy. Mac 1.0.1 released, Android in Play closed testing.",
+    "Built solo across three platforms (Android/Kotlin, macOS/Swift, and a Next.js site) for Android to Mac continuity: notifications, clipboard, files, SMS, and calls over an encrypted link on your own Wi-Fi, with no cloud, account, or relay. AES-256-GCM on a versioned protocol with ECDH pairing and per-session forward secrecy. Mac 1.0.1 released, Android live on Google Play.",
 };
 
 const THIRDMEAL: ResumeProject = {

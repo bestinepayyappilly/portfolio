@@ -11,15 +11,15 @@ import {
 import { cn } from "@/lib/utils";
 
 const VARIANT_PATH: Record<VariantSlug, string> = {
-  mobile: "/resume",
+  product: "/resume",
+  mobile: "/resume/mobile",
   frontend: "/resume/frontend",
-  product: "/resume/product",
 };
 
 function VariantSwitcher({ active }: { active: VariantSlug }) {
   return (
     <div className="inline-flex rounded-lg border border-border p-0.5 text-sm">
-      {(Object.keys(RESUME_VARIANTS) as VariantSlug[]).map((slug) => (
+      {(Object.keys(VARIANT_PATH) as VariantSlug[]).map((slug) => (
         <Link
           key={slug}
           href={VARIANT_PATH[slug]}
@@ -192,6 +192,17 @@ export function ResumeArticle({ variant }: { variant: VariantSlug }) {
                   <Icons.apple className="size-3" />
                   Live on the App Store
                 </span>
+              )}
+              {project.playStoreHref && (
+                <a
+                  href={project.playStoreHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium bg-muted px-1.5 py-0.5 rounded align-middle no-underline hover:text-foreground transition-colors"
+                >
+                  <Icons.android className="size-3" />
+                  Live on Google Play
+                </a>
               )}
             </h3>
             <p>{project.description}</p>

@@ -191,6 +191,17 @@ function SectionTitle({ children, st }: { children: string; st: Styles }) {
   return <Text style={st.sectionTitle}>{children}</Text>;
 }
 
+const ANDROID_LOGO_PATH =
+  "M1 18q.225-2.675 1.638-4.925T6.4 9.5L4.55 6.3q-.15-.225-.075-.475T4.8 5.45q.2-.125.45-.05t.4.3L7.5 8.9Q9.65 8 12 8t4.5.9l1.85-3.2q.15-.225.4-.3t.45.05q.25.125.325.375t-.075.475L17.6 9.5q2.35 1.325 3.762 3.575T23 18zm6-2.75q.525 0 .888-.363T8.25 14t-.363-.888T7 12.75t-.888.363T5.75 14t.363.888t.887.362m10 0q.525 0 .888-.363T18.25 14t-.363-.888T17 12.75t-.888.363t-.362.887t.363.888t.887.362";
+
+function AndroidMark() {
+  return (
+    <Svg width={8} height={8} viewBox="0 0 24 24">
+      <Path d={ANDROID_LOGO_PATH} fill={c.accent} />
+    </Svg>
+  );
+}
+
 function AppleMark() {
   return (
     <Svg width={8} height={8} viewBox="0 0 24 24">
@@ -200,7 +211,7 @@ function AppleMark() {
 }
 
 export function ResumePDF({
-  variant = "mobile",
+  variant = "product",
 }: {
   variant?: VariantSlug;
 }) {
@@ -323,6 +334,14 @@ export function ResumePDF({
                   </Link>
                 ) : (
                   <Text style={s.projectName}>{project.name}</Text>
+                )}
+                {project.playStoreHref && (
+                  <>
+                    <AndroidMark />
+                    <Link src={project.playStoreHref} style={s.projectNameLink}>
+                      Live on Google Play
+                    </Link>
+                  </>
                 )}
               </View>
               <Text style={s.projectDesc}>{project.description}</Text>
