@@ -8,10 +8,12 @@ import {
   Svg,
   Path,
 } from "@react-pdf/renderer";
+import type { ComponentProps } from "react";
 import { splitBoldSegments } from "@/lib/bold-text";
 import {
   RESUME_VARIANTS,
   orderedWork,
+  mergedRoles,
   type VariantSlug,
 } from "@/data/resume-variants";
 
@@ -134,12 +136,57 @@ const s = StyleSheet.create({
   eduDate: { fontSize: 9, color: c.light },
 });
 
+/**
+ * Overrides layered on top of `s` when a variant sets `dense`. Only the values
+ * that change are listed — everything else keeps the roomier default, so the
+ * two-page variants are untouched.
+ */
+const d = StyleSheet.create({
+  page: {
+    paddingTop: 22,
+    paddingBottom: 16,
+    paddingHorizontal: 38,
+    lineHeight: 1.3,
+  },
+  header: { marginBottom: 6 },
+  name: { fontSize: 20 },
+  subtitle: { fontSize: 10, marginTop: 2 },
+  section: { marginTop: 5 },
+  sectionTitle: { marginBottom: 4, paddingBottom: 2.5 },
+  summaryText: { fontSize: 9.2, lineHeight: 1.3 },
+  companyBlock: { marginBottom: 4 },
+  companyName: { fontSize: 11.5 },
+  companyNote: { marginTop: 1 },
+  roleRow: { marginTop: 3, marginBottom: 1.5 },
+  bullet: { marginBottom: 0.3 },
+  bulletDot: { fontSize: 8.9 },
+  bulletText: { fontSize: 8.9, lineHeight: 1.22 },
+  projectRow: { marginBottom: 2.5 },
+  projectName: { fontSize: 10 },
+  projectNameLink: { fontSize: 10 },
+  projectDesc: { fontSize: 8.9, lineHeight: 1.3, marginTop: 1 },
+  eduText: { fontSize: 9.2 },
+});
+
+/** react-pdf's own Style, recovered from a component's prop type. */
+type PdfStyle = Exclude<
+  NonNullable<ComponentProps<typeof View>["style"]>,
+  readonly unknown[]
+>;
+
+/** Base style, with the dense override layered on when the variant asks. */
+const sx = (
+  dense: boolean,
+  base: PdfStyle,
+  override: PdfStyle,
+): PdfStyle | PdfStyle[] => (dense ? [base, override] : base);
+
 function InlineText({
   text,
   style,
 }: {
   text: string;
-  style: typeof s.bulletText | typeof s.summaryText;
+  style: PdfStyle | PdfStyle[];
 }) {
   return (
     <Text style={style}>
@@ -156,17 +203,25 @@ function InlineText({
   );
 }
 
-function Bullet({ text }: { text: string }) {
+function Bullet({ text, dense }: { text: string; dense: boolean }) {
   return (
-    <View style={s.bullet} wrap={false}>
-      <Text style={s.bulletDot}>•</Text>
-      <InlineText text={text} style={s.bulletText} />
+    <View style={sx(dense, s.bullet, d.bullet)} wrap={false}>
+      <Text style={sx(dense, s.bulletDot, d.bulletDot)}>•</Text>
+      <InlineText text={text} style={sx(dense, s.bulletText, d.bulletText)} />
     </View>
   );
 }
 
-function SectionTitle({ children }: { children: string }) {
-  return <Text style={s.sectionTitle}>{children}</Text>;
+function SectionTitle({
+  children,
+  dense,
+}: {
+  children: string;
+  dense: boolean;
+}) {
+  return (
+    <Text style={sx(dense, s.sectionTitle, d.sectionTitle)}>{children}</Text>
+  );
 }
 
 function AppleMark() {
@@ -184,16 +239,19 @@ export function ResumePDF({
 }) {
   const v = RESUME_VARIANTS[variant];
   const work = orderedWork(v);
+  const merged = v.mergedCompany;
+  const roles = mergedRoles(v);
+  const dense = v.dense === true;
   return (
     <Document
-      title={`Bestine Payyappilly — ${v.label} Resume`}
+      title={`Bestine Payyappilly, ${v.label} Resume`}
       author="Bestine Payyappilly"
       subject={v.headline}
     >
-      <Page size="A4" style={s.page}>
-        <View style={s.header}>
-          <Text style={s.name}>Bestine Payyappilly</Text>
-          <Text style={s.subtitle}>{v.headline}</Text>
+      <Page size="A4" style={sx(dense, s.page, d.page)}>
+        <View style={sx(dense, s.header, d.header)}>
+          <Text style={sx(dense, s.name, d.name)}>Bestine Payyappilly</Text>
+          <Text style={sx(dense, s.subtitle, d.subtitle)}>{v.headline}</Text>
           <View style={s.contactRow}>
             <Text style={s.contactText}>Bangalore, India</Text>
             <Text style={s.sep}>|</Text>
@@ -223,31 +281,55 @@ export function ResumePDF({
           </View>
         </View>
 
-        <View style={s.section}>
-          <SectionTitle>Summary</SectionTitle>
-          <InlineText text={v.summary} style={s.summaryText} />
+        <View style={sx(dense, s.section, d.section)}>
+          <SectionTitle dense={dense}>Summary</SectionTitle>
+          <InlineText text={v.summary} style={sx(dense, s.summaryText, d.summaryText)} />
         </View>
 
-        <View style={s.section}>
-          <SectionTitle>Core Technical Expertise</SectionTitle>
-          {v.expertise.map((group) => (
-            <View key={group.label} style={s.skillRow} wrap={false}>
-              <Text style={s.skillLabel}>{group.label}</Text>
-              <Text style={s.skillText}>{group.items}</Text>
+        <View style={sx(dense, s.section, d.section)}>
+          <SectionTitle dense={dense}>Professional Experience</SectionTitle>
+          {merged ? (
+            <View style={sx(dense, s.companyBlock, d.companyBlock)}>
+              <View wrap={false}>
+                <View style={s.companyRow}>
+                  <Text style={sx(dense, s.companyName, d.companyName)}>
+                    {merged.name}
+                    {merged.badges.length > 0 &&
+                      ` (${merged.badges.join(", ")})`}
+                  </Text>
+                  <Text style={s.companyMeta}>
+                    {merged.start} – {merged.end} | {merged.location}
+                  </Text>
+                </View>
+                <Text style={sx(dense, s.companyNote, d.companyNote)}>{merged.note}</Text>
+              </View>
+              {roles.map((role) => (
+                <View key={role.title + role.start} break={false}>
+                  <View style={sx(dense, s.roleRow, d.roleRow)} wrap={false} minPresenceAhead={40}>
+                    <Text style={s.roleTitle}>
+                      {role.title}
+                      {role.product ? `, ${role.product}` : ""}
+                    </Text>
+                    <Text style={s.roleDate}>
+                      {role.start} – {role.end}
+                    </Text>
+                  </View>
+                  {role.bullets.map((bullet) => (
+                    <Bullet key={bullet} text={bullet} dense={dense} />
+                  ))}
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-
-        <View style={s.section}>
-          <SectionTitle>Professional Experience</SectionTitle>
+          ) : (
+            <>
           {work.map((job) => {
             const [firstRole, ...restRoles] = job.roles;
             const [firstBullet, ...restBullets] = firstRole.bullets;
             return (
-              <View key={job.company} style={s.companyBlock}>
+              <View key={job.company} style={sx(dense, s.companyBlock, d.companyBlock)}>
                 <View wrap={false}>
                   <View style={s.companyRow}>
-                    <Text style={s.companyName}>
+                    <Text style={sx(dense, s.companyName, d.companyName)}>
                       {job.company}
                       {job.badges.length > 0 && ` (${job.badges.join(", ")})`}
                     </Text>
@@ -258,61 +340,88 @@ export function ResumePDF({
                   {"note" in job && job.note && (
                     <Text style={s.companyNote}>{job.note}</Text>
                   )}
-                  <View style={s.roleRow}>
+                  <View style={sx(dense, s.roleRow, d.roleRow)}>
                     <Text style={s.roleTitle}>{firstRole.title}</Text>
                     <Text style={s.roleDate}>
                       {firstRole.start} – {firstRole.end}
                     </Text>
                   </View>
-                  <Bullet text={firstBullet} />
+                  <Bullet text={firstBullet} dense={dense} />
                 </View>
                 {restBullets.map((bullet) => (
-                  <Bullet key={bullet} text={bullet} />
+                  <Bullet key={bullet} text={bullet} dense={dense} />
                 ))}
                 {restRoles.map((role) => (
                   <View key={role.title + role.start}>
-                    <View style={s.roleRow} wrap={false} minPresenceAhead={60}>
+                    <View style={sx(dense, s.roleRow, d.roleRow)} wrap={false} minPresenceAhead={60}>
                       <Text style={s.roleTitle}>{role.title}</Text>
                       <Text style={s.roleDate}>
                         {role.start} – {role.end}
                       </Text>
                     </View>
                     {role.bullets.map((bullet) => (
-                      <Bullet key={bullet} text={bullet} />
+                      <Bullet key={bullet} text={bullet} dense={dense} />
                     ))}
                   </View>
                 ))}
               </View>
             );
           })}
+            </>
+          )}
         </View>
 
-        <View style={s.section}>
-          <SectionTitle>Personal Projects</SectionTitle>
+        {v.showProjects !== false && (
+        <View style={sx(dense, s.section, d.section)}>
+          <SectionTitle dense={dense}>Personal Projects</SectionTitle>
 
           {v.projects.map((project) => (
-            <View key={project.name} style={s.projectRow} wrap={false}>
+            <View
+              key={project.name}
+              style={sx(dense, s.projectRow, d.projectRow)}
+              wrap={false}
+            >
               <View style={s.projectHead}>
                 {project.appStore && <AppleMark />}
                 {project.href ? (
-                  <Link src={project.href} style={s.projectNameLink}>
+                  <Link
+                    src={project.href}
+                    style={sx(dense, s.projectNameLink, d.projectNameLink)}
+                  >
                     {project.name}
-                    {project.appStore ? " — Live on the App Store" : ""}
+                    {project.appStore ? " (Live on the App Store)" : ""}
                   </Link>
                 ) : (
-                  <Text style={s.projectName}>{project.name}</Text>
+                  <Text style={sx(dense, s.projectName, d.projectName)}>
+                    {project.name}
+                  </Text>
                 )}
               </View>
-              <Text style={s.projectDesc}>{project.description}</Text>
+              <Text style={sx(dense, s.projectDesc, d.projectDesc)}>
+                {project.description}
+              </Text>
             </View>
           ))}
         </View>
+        )}
 
-        <View style={s.section}>
-          <SectionTitle>Education</SectionTitle>
+        {v.showExpertise !== false && (
+        <View style={sx(dense, s.section, d.section)}>
+          <SectionTitle dense={dense}>Core Technical Expertise</SectionTitle>
+          {v.expertise.map((group) => (
+            <View key={group.label} style={s.skillRow} wrap={false}>
+              <Text style={s.skillLabel}>{group.label}</Text>
+              <Text style={s.skillText}>{group.items}</Text>
+            </View>
+          ))}
+        </View>
+        )}
+
+        <View style={sx(dense, s.section, d.section)}>
+          <SectionTitle dense={dense}>Education</SectionTitle>
           <View style={s.eduRow} wrap={false}>
-            <Text style={s.eduText}>
-              SRM University — B.Tech, Electronics &amp; Communication
+            <Text style={sx(dense, s.eduText, d.eduText)}>
+              SRM University, B.Tech in Electronics &amp; Communication
               Engineering
             </Text>
             <Text style={s.eduDate}>2022</Text>
